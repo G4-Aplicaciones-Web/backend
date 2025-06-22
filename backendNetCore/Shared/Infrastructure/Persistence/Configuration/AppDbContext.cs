@@ -1,3 +1,4 @@
+using backendNetCore.MealPlans.Domain.Model.Aggregates;
 using backendNetCore.Recipes.Domain.Model.Aggregates;
 using backendNetCore.Recipes.Domain.Model.Entities;
 using backendNetCore.Recipes.Domain.Model.ValueObjects;
@@ -27,7 +28,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
         // =================== RECOMMENDATIONS CONTEXT ===================
 
         modelBuilder.Entity<RecommendationTemplate>().HasKey(rt => rt.Id);
@@ -69,8 +69,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        // =================== RECIPES CONTEXT ===================
-
+        // =================== RECIPES CONTEXT ==================
+        
+        
+        // Recipes Context
         modelBuilder.Entity<Recipe>().HasKey(r => r.Id);
         modelBuilder.Entity<Recipe>().Property(r => r.Id).IsRequired().ValueGeneratedOnAdd();
         modelBuilder.Entity<Recipe>().Property(r => r.Name).IsRequired().HasMaxLength(100);
@@ -143,6 +145,16 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .Property<int>("RecipeId")
             .IsRequired();
 
+
+
+        
+        // Meal Plans Context
+        modelBuilder.Entity<MealPlan>().HasKey(m => m.Id);
+        modelBuilder.Entity<MealPlan>().Property(m => m.Id).IsRequired().ValueGeneratedOnAdd();
+        modelBuilder.Entity<MealPlan>().Property(m => m.ProfileId).IsRequired().HasMaxLength(100);
+        modelBuilder.Entity<MealPlan>().Property(m => m.Summary).IsRequired().HasMaxLength(100);
+        modelBuilder.Entity<MealPlan>().Property(m => m.Score).IsRequired().HasDefaultValue(10);
+        
         modelBuilder.UseSnakeCaseNamingConvention();
     }
 }

@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backendNetCore.Recipes.Infrastructure.Persistence.EFC.Repositories;
 
-public class RecipeRepository(AppDbContext context)
-:BaseRepository<Recipe>(context), IRecipeRepository
+public class RecipeRepository(AppDbContext context) : BaseRepository<Recipe>(context), IRecipeRepository
 {
     public async Task<IEnumerable<Recipe>> FindRecipeByUserIdAsync(int userId)
     {
@@ -32,6 +31,22 @@ public class RecipeRepository(AppDbContext context)
         return await Context.Set<Recipe>()
             .Include("_ingredients")
             .Where(r => r.RecipeType == recipeType)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Recipe>> SearchByNameAsync(string name)
+    {
+        return await Context.Set<Recipe>()
+            .Include("_ingredients") // Generalmente querrás incluir ingredientes en las consultas de recetas
+            .Where(r => r.Name.Contains(name))
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Recipe>> FindByIngredientIdAsync(int ingredientId)
+    {
+        return await Context.Set<Recipe>()
+            .Include("_ingredients")
+            .Where(r => r.Ingredients.Any(iq => iq.IngredientId == ingredientId)) // Accedemos a la propiedad pública Ingredients
             .ToListAsync();
     }
 }
