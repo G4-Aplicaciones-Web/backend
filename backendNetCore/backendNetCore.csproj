@@ -22,4 +22,8 @@
       <Content Include=".github\workflows\deploy-dotnet.yml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Recommendations\Application\ACL\" />
+    </ItemGroup>
+
 </Project>
