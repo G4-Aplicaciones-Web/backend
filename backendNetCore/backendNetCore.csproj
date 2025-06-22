@@ -22,4 +22,8 @@
       <Content Include=".github\workflows\deploy-dotnet.yml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Tracking\" />
+    </ItemGroup>
+
 </Project>
