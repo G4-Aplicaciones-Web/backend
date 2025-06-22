@@ -20,7 +20,7 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// Retrieve a list of all entities in the repository asynchronously.
     /// </summary>
     /// <returns>An enumerable collection of all entities in the repository.</returns>
-    Task<IEnumerable<TEntity>> ListSync();
+    Task<IEnumerable<TEntity>> ListAsync();
     
     /// <summary>
     /// Update an existing entity in the repository.

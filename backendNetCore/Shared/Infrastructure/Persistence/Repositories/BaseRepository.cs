@@ -23,7 +23,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         return await Context.Set<TEntity>().FindAsync(id);
     }
 
-    public async Task<IEnumerable<TEntity>> ListSync()
+    public async Task<IEnumerable<TEntity>> ListAsync()
     {
         return await Context.Set<TEntity>().ToListAsync();
     }

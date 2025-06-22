@@ -18,4 +18,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include=".github\workflows\deploy-dotnet.yml" />
+    </ItemGroup>
+
 </Project>
