@@ -1,3 +1,8 @@
+using backendNetCore.MealPlans.Application.Internal.CommandServices;
+using backendNetCore.MealPlans.Application.Internal.QueryServices;
+using backendNetCore.MealPlans.Domain.Repositories;
+using backendNetCore.MealPlans.Domain.Services;
+using backendNetCore.MealPlans.Infrastructure.Repositories;
 using backendNetCore.Recipes.Application.Internal.CommandServices;
 using backendNetCore.Recipes.Application.Internal.QueryServices;
 using backendNetCore.Recipes.Domain.Repositories;
@@ -91,6 +96,12 @@ builder.Services.AddScoped<IRecipeCommandService, RecipeCommandService>();
 builder.Services.AddScoped<IRecipeQueryService, RecipeQueryService>();
 builder.Services.AddScoped<IIngredientCommandService, IngredientCommandService>();
 builder.Services.AddScoped<IIngredientQueryService, IngredientQueryService>();
+
+
+// Meal Plans Bounded Context Injection Configuration
+builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
+builder.Services.AddScoped<IMealPlanCommandService, MealPlanCommandService>();
+builder.Services.AddScoped<IMealPlanQueryService, MealPlanQueryService>();
 
 var app = builder.Build();
 
