@@ -9,4 +9,5 @@ public interface IIngredientQueryService
     Task<Ingredient?> Handle(GetIngredientByNameQuery query);
     Task<IEnumerable<Ingredient>> Handle(GetAllIngredientsQuery query);
     Task<IEnumerable<Ingredient>> Handle(GetIngredientsByCategoryQuery query);
+    Task<IEnumerable<Ingredient>> Handle(GetIngredientsByIdsQuery query);
 }

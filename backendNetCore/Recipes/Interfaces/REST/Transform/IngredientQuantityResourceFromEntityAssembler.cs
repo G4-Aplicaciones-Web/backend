@@ -26,7 +26,8 @@ public static class IngredientQuantityResourceFromEntityAssembler
         // Se asume que 'ingredient' no es nulo y corresponde a 'ingredientQuantity.IngredientId'
         return new IngredientQuantityResource(
             ingredientQuantity.IngredientId,
-            ingredientQuantity.Quantity
+            ingredientQuantity.Quantity,
+            ingredient.Name
         );
     }
 }

@@ -26,4 +26,9 @@ public class IngredientQueryService(IIngredientRepository ingredientRepository) 
     {
         return await ingredientRepository.FindByCategoryAsync(query.Category);
     }
+
+    public async Task<IEnumerable<Ingredient>> Handle(GetIngredientsByIdsQuery query)
+    {
+        return await ingredientRepository.FindByIdsAsync(query.Ids);
+    }
 }

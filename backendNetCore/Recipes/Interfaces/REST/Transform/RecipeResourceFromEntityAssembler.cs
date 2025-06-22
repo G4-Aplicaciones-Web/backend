@@ -29,7 +29,7 @@ public static class RecipeResourceFromEntityAssembler
             var ingredient = allIngredientsInRecipe.FirstOrDefault(i => i.Id == iq.IngredientId);
             if (ingredient == null)
             {
-                return new IngredientQuantityResource(iq.IngredientId, iq.Quantity);
+                return new IngredientQuantityResource(iq.IngredientId, iq.Quantity, "Unknown");
             }
             return IngredientQuantityResourceFromEntityAssembler.ToResourceFromEntity(iq, ingredient);
         }).ToList();

@@ -87,10 +87,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Recipes Bounded Context Injection Configuration
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
-// builder.Services.AddScoped<IRecipeCommandService, RecipeCommandService>();
-// builder.Services.AddScoped<IRecipeQueryService, RecipeQueryService>();
-// builder.Services.AddScoped<IIngredientCommandService, IngredientCommandService>();
-// builder.Services.AddScoped<IIngredientQueryService, IngredientQueryService>();
+builder.Services.AddScoped<IRecipeCommandService, RecipeCommandService>();
+builder.Services.AddScoped<IRecipeQueryService, RecipeQueryService>();
+builder.Services.AddScoped<IIngredientCommandService, IngredientCommandService>();
+builder.Services.AddScoped<IIngredientQueryService, IngredientQueryService>();
 
 var app = builder.Build();
 
@@ -107,5 +107,6 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.MapControllers();
 
 app.Run();
