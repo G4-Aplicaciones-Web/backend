@@ -7,14 +7,14 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// </summary>
     /// <param name="entity">The entity object to add.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task AddSync(TEntity entity);
+    Task AddAsync(TEntity entity);
     
     /// <summary>
     /// Find an entity by its identifier asynchronously.
     /// </summary>
     /// <param name="id">The ID of the entity to find.</param>
     /// <returns>The entity object if found; otherwise, null.</returns>
-    Task<TEntity?> FindByIdSync(int id);
+    Task<TEntity?> FindByIdAsync(int id);
     
     /// <summary>
     /// Retrieve a list of all entities in the repository asynchronously.
