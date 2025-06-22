@@ -1,3 +1,3 @@
 namespace backendNetCore.Recipes.Domain.Model.Queries;
 
-public record GetRecipeByIdQuery();
+public record GetRecipeByIdQuery(int RecipeId);
