@@ -25,7 +25,7 @@ public static class StringExtensions
             {
                 if(char.IsUpper(e.Current))
                 {
-                    yield return '-';
+                    yield return '_';
                     yield return char.ToLower(e.Current);
                 }
                 else

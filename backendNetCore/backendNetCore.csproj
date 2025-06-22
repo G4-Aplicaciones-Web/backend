@@ -22,15 +22,4 @@
       <Content Include=".github\workflows\deploy-dotnet.yml" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Recipe\Application\ACL\" />
-      <Folder Include="Recipe\Application\Internal\" />
-      <Folder Include="Recipe\Domain\Model\" />
-      <Folder Include="Recipe\Domain\Repositories\" />
-      <Folder Include="Recipe\Domain\Services\" />
-      <Folder Include="Recipe\Interfaces\ACL\" />
-      <Folder Include="Recipe\Interfaces\REST\Resources\" />
-      <Folder Include="Recipe\Interfaces\REST\Transform\" />
-    </ItemGroup>
-
 </Project>
