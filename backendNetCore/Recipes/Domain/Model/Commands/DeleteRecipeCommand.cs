@@ -1,3 +1,3 @@
 namespace backendNetCore.Recipes.Domain.Model.Commands;
 
-public record DeleteRecipeCommand();
+public record DeleteRecipeCommand(int Id);
