@@ -1,21 +1,34 @@
+using backendNetCore.Recipes.Application.Internal.CommandServices;
+using backendNetCore.Recipes.Application.Internal.QueryServices;
+using backendNetCore.Recipes.Domain.Repositories;
+using backendNetCore.Recipes.Domain.Services;
+using backendNetCore.Recipes.Infrastructure.Persistence.EFC.Repositories;
 using backendNetCore.Shared.Domain.Repositories;
 using backendNetCore.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Repositories;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Services to the Container
-// 
-builder.Services.AddOpenApi();
 
 // Configure Lower Case URLs
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 // Configure Kebab Case Route Naming Convention
 builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()));
+
+// Add CORS Policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllPolicy",
+        policy => 
+            policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+});
 
 // Add Database Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -41,12 +54,47 @@ else if (builder.Environment.IsProduction())
             .EnableDetailedErrors();
     });
 
+// Add Open API
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1",
+            new OpenApiInfo
+            {
+                Title = "AlimentatePlus API",
+                Version = "v1",
+                Description = "API for AlimentatePlus",
+                Contact = new OpenApiContact
+                {
+                    Name = "NutriSmart Dev Team",
+                    Email = "contact@nutrismart.com"
+                },
+                License = new OpenApiLicense
+                {
+                    Name = "MIT License",
+                    Url = new Uri("https://opensource.org/licenses/MIT")
+                }
+            });
+        options.EnableAnnotations();
+    }
+    );
+
 // Configure Dependency Injection for Repositories
+
 // Shared Bounded Context Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Recipes Bounded Context Injection Configuration
+builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
+builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
+// builder.Services.AddScoped<IRecipeCommandService, RecipeCommandService>();
+// builder.Services.AddScoped<IRecipeQueryService, RecipeQueryService>();
+// builder.Services.AddScoped<IIngredientCommandService, IngredientCommandService>();
+// builder.Services.AddScoped<IIngredientQueryService, IngredientQueryService>();
+
 var app = builder.Build();
 
+// Verify Database Objects are Created
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -54,10 +102,10 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseRouting();
+
 app.Run();
