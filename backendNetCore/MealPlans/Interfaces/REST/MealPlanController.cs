@@ -28,9 +28,9 @@ public class MealPlanController(
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetMealPlanById(int Id)
+    public async Task<ActionResult> GetMealPlanById(int id)
     {
-        var getMealPlanByIdQuery = new GetMealPlanByIdQuery(Id);
+        var getMealPlanByIdQuery = new GetMealPlanByIdQuery(id);
         var result = await mealPlanQueryService.Handle(getMealPlanByIdQuery);
         if (result is null) return NotFound();
         var resource = MealPlanResourceFromEntityAssembler.ToResourceFromEntity(result);

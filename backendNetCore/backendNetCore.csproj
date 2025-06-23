@@ -26,4 +26,8 @@
       <Folder Include="Recommendations\Application\ACL\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Tracking\" />
+    </ItemGroup>
+
 </Project>
