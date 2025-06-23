@@ -25,24 +25,6 @@ public class Ingredient
         IngredientCategory = category;
     }
     
-    public void UpdateNutrients(MacronutrientValues newNutrients)
-    {
-        Nutrients = newNutrients ?? throw new ArgumentNullException(nameof(newNutrients));
-    }
-
-    public void UpdateCategory(ECategory newCategory)
-    {
-        IngredientCategory = newCategory;
-    }
-
-    public void UpdateName(string newName)
-    {
-        if (string.IsNullOrWhiteSpace(newName))
-            throw new ArgumentException("Ingredient name cannot be null or empty", nameof(newName));
-        
-        Name = newName;
-    }
-
     public void UpdateDetails(string name, MacronutrientValues nutrients, ECategory category)
     {
         if (string.IsNullOrWhiteSpace(name))
