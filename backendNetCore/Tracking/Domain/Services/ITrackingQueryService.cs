@@ -1,8 +1,7 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.Commands;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Queries;
+﻿using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Model.Queries;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Services;
+namespace backendNetCore.Tracking.Domain.Services;
 
 /// <summary>
 /// Tracking query service interface

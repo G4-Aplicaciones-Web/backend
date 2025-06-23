@@ -5,7 +5,7 @@ using backendNetCore.Tracking.Domain.Repositories;
 using backendNetCore.Tracking.Domain.Services;
 using backendNetCore.Shared.Domain.Repositories;
 
-namespace AlimentateplusPlatform.API.Tracking.Application.Internal.CommandServices;
+namespace backendNetCore.Tracking.Application.Internal.CommandServices;
 
 /// <summary>
 /// Tracking command service implementation

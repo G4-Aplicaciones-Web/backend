@@ -1,4 +1,6 @@
-﻿namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST.Resources;
+﻿using backendNetCore.Tracking.Interfaces.REST.Resources;
+
+namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST.Resources;
 
 public record TrackingResource( long Id,
     long UserId,

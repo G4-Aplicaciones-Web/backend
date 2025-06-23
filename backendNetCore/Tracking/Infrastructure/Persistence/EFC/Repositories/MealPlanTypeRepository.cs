@@ -1,11 +1,11 @@
-﻿using AlimentateplusPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
-using AlimentateplusPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
-using AlimentateplusPlatform.API.Tracking.Domain.Repositories;
+﻿using backendNetCore.Shared.Infrastructure.Persistence.Configuration;
+using backendNetCore.Shared.Infrastructure.Persistence.Repositories;
+using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
+using backendNetCore.Tracking.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace AlimentateplusPlatform.API.Tracking.Infrastructure.Persistence.EFC.Repositories;
+namespace backendNetCore.Tracking.Infrastructure.Persistence.EFC.Repositories;
 
 public class MealPlanTypeRepository(AppDbContext context)
     : BaseRepository<MealPlanType>(context), IMealPlanTypeRepository

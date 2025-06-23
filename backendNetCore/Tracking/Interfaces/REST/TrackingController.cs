@@ -1,13 +1,13 @@
 ﻿using System.Net.Mime;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Queries;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
-using AlimentateplusPlatform.API.Tracking.Domain.Services;
-using AlimentateplusPlatform.API.Tracking.Interfaces.REST.Resources;
-using AlimentateplusPlatform.API.Tracking.Interfaces.REST.Transform;
+using backendNetCore.Tracking.Domain.Model.Queries;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
+using backendNetCore.Tracking.Domain.Services;
+using backendNetCore.Tracking.Interfaces.REST.Resources;
+using backendNetCore.Tracking.Interfaces.REST.Transform;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST;
+namespace backendNetCore.Tracking.Interfaces.REST;
 
 [ApiController]
 [Route("api/v1/tracking")]

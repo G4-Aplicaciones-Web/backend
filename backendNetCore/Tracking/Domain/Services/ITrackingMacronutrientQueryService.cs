@@ -1,4 +1,4 @@
-﻿namespace AlimentateplusPlatform.API.Tracking.Domain.Services;
+﻿namespace backendNetCore.Tracking.Domain.Services;
 
 public interface ITrackingMacronutrientQueryService
 {

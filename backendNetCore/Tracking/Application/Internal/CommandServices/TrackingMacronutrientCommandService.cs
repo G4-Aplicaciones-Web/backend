@@ -1,10 +1,10 @@
-﻿using AlimentateplusPlatform.API.Shared.Domain.Repositories;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Commands;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
-using AlimentateplusPlatform.API.Tracking.Domain.Repositories;
-using AlimentateplusPlatform.API.Tracking.Domain.Services;
+﻿using backendNetCore.Shared.Domain.Repositories;
+using backendNetCore.Tracking.Domain.Model.Commands;
+using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Repositories;
+using backendNetCore.Tracking.Domain.Services;
 
-namespace AlimentateplusPlatform.API.Tracking.Application.Internal.CommandServices;
+namespace backendNetCore.Tracking.Application.Internal.CommandServices;
 
 public class TrackingMacronutrientCommandService(
     ITrackingMacronutrientRepository repository,

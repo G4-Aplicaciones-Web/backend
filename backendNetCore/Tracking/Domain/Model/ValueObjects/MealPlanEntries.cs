@@ -1,6 +1,6 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
+﻿using backendNetCore.Tracking.Domain.Model.Entities;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
+namespace backendNetCore.Tracking.Domain.Model.ValueObjects;
 
 public record MealPlanEntries(List<MealPlanEntry> ConsumedMeals)
 {

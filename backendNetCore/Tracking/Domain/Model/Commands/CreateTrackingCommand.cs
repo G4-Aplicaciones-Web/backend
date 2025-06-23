@@ -1,5 +1,5 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
+﻿using backendNetCore.Tracking.Domain.Model.ValueObjects;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Model.Commands;
+namespace backendNetCore.Tracking.Domain.Model.Commands;
 
 public record CreateTrackingCommand(UserId UserId);

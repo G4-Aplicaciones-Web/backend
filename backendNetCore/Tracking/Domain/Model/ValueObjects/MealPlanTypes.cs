@@ -1,4 +1,4 @@
-﻿namespace AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
+﻿namespace backendNetCore.Tracking.Domain.Model.ValueObjects;
 
 public enum MealPlanTypes
 {

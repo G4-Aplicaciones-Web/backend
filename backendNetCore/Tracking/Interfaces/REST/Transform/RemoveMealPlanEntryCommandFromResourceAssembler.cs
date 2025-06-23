@@ -1,6 +1,6 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.Commands;
+﻿using backendNetCore.Tracking.Domain.Model.Commands;
 
-namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST.Transform;
+namespace backendNetCore.Tracking.Interfaces.REST.Transform;
 
 public class RemoveMealPlanEntryCommandFromResourceAssembler
 {

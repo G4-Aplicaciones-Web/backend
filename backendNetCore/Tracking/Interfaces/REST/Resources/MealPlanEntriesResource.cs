@@ -1,4 +1,4 @@
-﻿namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST.Resources;
+﻿namespace backendNetCore.Tracking.Interfaces.REST.Resources;
 
 public record MealPlanEntriesResource(
     long Id,

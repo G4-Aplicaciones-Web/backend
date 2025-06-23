@@ -1,7 +1,7 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
-using AlimentateplusPlatform.API.Tracking.Interfaces.REST.Resources;
+﻿using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Interfaces.REST.Resources;
 
-namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST.Transform;
+namespace backendNetCore.Tracking.Interfaces.REST.Transform;
 
 public class TrackingMacronutrientResourceFromEntityAssembler
 {

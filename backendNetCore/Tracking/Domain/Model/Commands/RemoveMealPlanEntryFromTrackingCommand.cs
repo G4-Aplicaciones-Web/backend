@@ -1,4 +1,4 @@
-﻿namespace AlimentateplusPlatform.API.Tracking.Domain.Model.Commands;
+﻿namespace backendNetCore.Tracking.Domain.Model.Commands;
 
 /// <summary>
 /// Remove Meal Plan Entry from Tracking Command

@@ -1,6 +1,6 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
+﻿using backendNetCore.Tracking.Domain.Model.ValueObjects;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Model.Queries;
+namespace backendNetCore.Tracking.Domain.Model.Queries;
 
 public record GetTrackingGoalByUserIdQuery(UserId UserId);
 

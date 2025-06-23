@@ -1,10 +1,6 @@
 ﻿using AlimentateplusPlatform.API.Tracking.Interfaces.REST.Resources;
 
-namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST.Transform;
-
-using System.Linq;
-
-using System.Collections.Generic;
+namespace backendNetCore.Tracking.Interfaces.REST.Transform;
 
 public class TrackingResourceFromEntityAssembler
 {

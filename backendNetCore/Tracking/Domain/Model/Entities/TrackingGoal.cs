@@ -1,6 +1,7 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
+﻿using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
+namespace backendNetCore.Tracking.Domain.Model.Entities;
 
 // TrackingGoal Entity
 public class TrackingGoal

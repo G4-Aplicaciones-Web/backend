@@ -1,7 +1,7 @@
-﻿using AlimentateplusPlatform.API.Shared.Domain.Repositories;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
+﻿using backendNetCore.Shared.Domain.Repositories;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Repositories;
+namespace backendNetCore.Tracking.Domain.Repositories;
 
 public interface ITrackingRepository : IBaseRepository<Model.Aggregates.Tracking>
 {

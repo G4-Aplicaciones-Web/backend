@@ -1,7 +1,7 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.Commands;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
+﻿using backendNetCore.Tracking.Domain.Model.Commands;
+using backendNetCore.Tracking.Domain.Model.Entities;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Services;
+namespace backendNetCore.Tracking.Domain.Services;
 
 public interface ITrackingGoalCommandService
 {

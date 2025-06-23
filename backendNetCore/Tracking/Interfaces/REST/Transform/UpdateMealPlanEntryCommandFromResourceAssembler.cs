@@ -1,8 +1,8 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.Commands;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
-using AlimentateplusPlatform.API.Tracking.Interfaces.REST.Resources;
+﻿using backendNetCore.Tracking.Domain.Model.Commands;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
+using backendNetCore.Tracking.Interfaces.REST.Resources;
 
-namespace AlimentateplusPlatform.API.Tracking.Interfaces.REST.Transform;
+namespace backendNetCore.Tracking.Interfaces.REST.Transform;
 
 public class UpdateMealPlanEntryCommandFromResourceAssembler
 {

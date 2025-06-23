@@ -1,4 +1,4 @@
-﻿namespace AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
+﻿namespace backendNetCore.Tracking.Domain.Model.Entities;
 
 public class TrackingMacronutrient
 {

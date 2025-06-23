@@ -1,9 +1,9 @@
-﻿using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Queries;
-using AlimentateplusPlatform.API.Tracking.Domain.Repositories;
-using AlimentateplusPlatform.API.Tracking.Domain.Services;
+﻿using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Model.Queries;
+using backendNetCore.Tracking.Domain.Repositories;
+using backendNetCore.Tracking.Domain.Services;
 
-namespace AlimentateplusPlatform.API.Tracking.Application.Internal.QueryServices;
+namespace backendNetCore.Tracking.Application.Internal.QueryServices;
 
 public class TrackingGoalQueryService(ITrackingGoalRepository repository)
     : ITrackingGoalQueryService

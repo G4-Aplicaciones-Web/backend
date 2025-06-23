@@ -1,8 +1,8 @@
-﻿using AlimentateplusPlatform.API.Shared.Domain.Repositories;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.Entities;
-using AlimentateplusPlatform.API.Tracking.Domain.Model.ValueObjects;
+﻿using backendNetCore.Shared.Domain.Repositories;
+using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
 
-namespace AlimentateplusPlatform.API.Tracking.Domain.Repositories;
+namespace backendNetCore.Tracking.Domain.Repositories;
 
 public interface IMealPlanTypeRepository : IBaseRepository<MealPlanType>
 {
