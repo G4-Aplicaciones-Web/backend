@@ -19,7 +19,11 @@ using backendNetCore.Shared.Domain.Repositories;
 using backendNetCore.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Repositories;
-
+using backendNetCore.Tracking.Application.Internal.CommandServices;
+using backendNetCore.Tracking.Application.Internal.QueryServices;
+using backendNetCore.Tracking.Domain.Repositories;
+using backendNetCore.Tracking.Domain.Services;
+using backendNetCore.Tracking.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -118,6 +122,21 @@ builder.Services.AddScoped<RecommendationTemplateRepository>(); // No tiene inte
 builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
 builder.Services.AddScoped<IMealPlanCommandService, MealPlanCommandService>();
 builder.Services.AddScoped<IMealPlanQueryService, MealPlanQueryService>();
+
+// Tracking Bounded Context
+builder.Services.AddScoped<ITrackingRepository, TrackingRepository>();
+builder.Services.AddScoped<ITrackingCommandService, TrackingCommandService>();
+builder.Services.AddScoped<ITrackingQueryService, TrackingQueryService>();
+
+builder.Services.AddScoped<IMealPlanEntryRepository, MealPlanEntryRepository>();
+builder.Services.AddScoped<IMealPlanTypeRepository, MealPlanTypeRepository>();
+
+builder.Services.AddScoped<ITrackingMacronutrientRepository, TrackingMacronutrientRepository>();
+builder.Services.AddScoped<ITrackingMacronutrientCommandService, TrackingMacronutrientCommandService>();
+builder.Services.AddScoped<ITrackingMacronutrientQueryService, TrackingMacronutrientQueryService>(); // <-- aquí
+builder.Services.AddScoped<ITrackingGoalRepository, TrackingGoalRepository>();
+builder.Services.AddScoped<ITrackingGoalCommandService, TrackingGoalCommandService>();
+builder.Services.AddScoped<ITrackingGoalQueryService, TrackingGoalQueryService>();
 
 
 var app = builder.Build();
