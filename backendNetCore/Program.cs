@@ -1,20 +1,35 @@
+using backendNetCore.IAM.Application.ACL.Services;
+using backendNetCore.IAM.Application.Internal.CommandServices;
+using backendNetCore.IAM.Application.Internal.OutboundServices;
+using backendNetCore.IAM.Application.Internal.QueryServices;
+using backendNetCore.IAM.Domain.Repositories;
+using backendNetCore.IAM.Domain.Services;
+using backendNetCore.IAM.Infrastructure.Hashing.BCrypt.Services;
+using backendNetCore.IAM.Infrastructure.Persistence.EFC.Repositories;
+using backendNetCore.IAM.Infrastructure.Pipeline.Middleware.Extensions;
+using backendNetCore.IAM.Infrastructure.Tokens.JWT.Configuration;
+using backendNetCore.IAM.Infrastructure.Tokens.JWT.Services;
+using backendNetCore.IAM.Interfaces.ACL;
 using backendNetCore.MealPlans.Application.Internal.CommandServices;
 using backendNetCore.MealPlans.Application.Internal.QueryServices;
 using backendNetCore.MealPlans.Domain.Repositories;
 using backendNetCore.MealPlans.Domain.Services;
 using backendNetCore.MealPlans.Infrastructure.Repositories;
+using backendNetCore.Profiles.Application.Internal.CommandServices;
+using backendNetCore.Profiles.Application.Internal.QueryServices;
+using backendNetCore.Profiles.Domain.Repositories;
+using backendNetCore.Profiles.Domain.Services;
+using backendNetCore.Profiles.Infrastructure.Persistence.EFC.Repositories;
 using backendNetCore.Recipes.Application.Internal.CommandServices;
 using backendNetCore.Recipes.Application.Internal.QueryServices;
 using backendNetCore.Recipes.Domain.Repositories;
 using backendNetCore.Recipes.Domain.Services;
 using backendNetCore.Recipes.Infrastructure.Persistence.EFC.Repositories;
-
 using backendNetCore.Recommendations.Application.Internal.CommandServices;
 using backendNetCore.Recommendations.Application.Internal.QueryServices;
 using backendNetCore.Recommendations.Domain.Model.Repositories;
 using backendNetCore.Recommendations.Infrastructure.Persistence.EFC.repositories;
 using backendNetCore.Recommendations.Infrastructure.Persistence.EFC.Repositories;
-
 using backendNetCore.Shared.Domain.Repositories;
 using backendNetCore.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Configuration;
@@ -95,6 +110,29 @@ builder.Services.AddSwaggerGen(options =>
             Url = new Uri("https://opensource.org/licenses/MIT")
         }
     });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
     options.EnableAnnotations();
 });
 
@@ -110,7 +148,6 @@ builder.Services.AddScoped<IRecipeCommandService, RecipeCommandService>();
 builder.Services.AddScoped<IRecipeQueryService, RecipeQueryService>();
 builder.Services.AddScoped<IIngredientCommandService, IngredientCommandService>();
 builder.Services.AddScoped<IIngredientQueryService, IngredientQueryService>();
-
 
 // Recommendations Bounded Context
 builder.Services.AddScoped<IRecommendationCommandService, RecommendationCommandService>();
@@ -138,6 +175,23 @@ builder.Services.AddScoped<ITrackingGoalRepository, TrackingGoalRepository>();
 builder.Services.AddScoped<ITrackingGoalCommandService, TrackingGoalCommandService>();
 builder.Services.AddScoped<ITrackingGoalQueryService, TrackingGoalQueryService>();
 
+// Profiles Bounded Context Dependency Injection Configuration
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
+builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
+
+// IAM Bounded Context Injection Configuration
+
+// TokenSettings Configuration
+
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 
 var app = builder.Build();
 
@@ -149,14 +203,21 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
-// Configure Middleware
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
-app.UseRouting();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseCors("AllowAllPolicy");
+
+// Add Authorization Middleware to Pipeline
+app.UseRequestAuthorization();
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
 
 app.MapControllers();
 
