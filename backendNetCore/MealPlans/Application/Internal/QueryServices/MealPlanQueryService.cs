@@ -23,4 +23,9 @@ public class MealPlanQueryService(IMealPlanRepository mealPlanRepository)
     {
         return await mealPlanRepository.FindByProfileIdAndScoreAsync(query.ProfileId, query.Score);
     }
+
+    public async Task<IEnumerable<MealPlan>> Handle(GetAllMealPlansQuery query)
+    {
+        return await mealPlanRepository.ListAsync();
+    }
 }
