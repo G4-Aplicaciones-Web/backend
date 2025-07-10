@@ -7,4 +7,6 @@ public interface ITrackingRepository : IBaseRepository<Model.Aggregates.Tracking
 {
     Task<Model.Aggregates.Tracking?> FindByUserIdAsync(UserId userId);
     Task<bool> ExistsByUserIdAsync(UserId userId);
+    
+    Task<Model.Aggregates.Tracking?> FindByIdWithEntriesAsync(long id);
 }

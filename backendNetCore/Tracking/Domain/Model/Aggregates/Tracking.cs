@@ -14,7 +14,7 @@ namespace backendNetCore.Tracking.Domain.Model.Aggregates;
 /// </remarks>
 public class Tracking
 {
-    private List<MealPlanEntry> _mealPlanEntries;
+    private List<MealPlanEntry> _mealPlanEntries = new List<MealPlanEntry>();
 
     public int Id { get; private set; }
     
@@ -29,7 +29,10 @@ public class Tracking
     public List<MealPlanEntry> MealPlanEntriesInternal
     {
         get => _mealPlanEntries;
-        private set => _mealPlanEntries = value;
+        private set 
+        { 
+            _mealPlanEntries = value ?? new List<MealPlanEntry>();
+        }
     }
     public TrackingMacronutrient TrackingMacronutrient { get; private set; }
     
@@ -156,6 +159,6 @@ public class Tracking
     /// </summary>
     public IReadOnlyList<MealPlanEntry> GetMealPlanEntries()
     {
-        return (_mealPlanEntries ?? new List<MealPlanEntry>()).AsReadOnly();
+        return _mealPlanEntries.AsReadOnly();
     }
 }

@@ -65,46 +65,59 @@ public class TrackingCommandService(
 
     public async Task Handle(RemoveMealPlanEntryFromTrackingCommand command)
     {
-        var tracking = await trackingRepository.FindByIdAsync(command.TrackingId)
-                       ?? throw new ArgumentException("Tracking not found");
+        var tracking = await trackingRepository.FindByIdWithEntriesAsync(command.TrackingId); // ✅ Cambiar aquí
+        if (tracking is null)
+            throw new ArgumentException("Tracking not found");
 
-        // Buscar la entrada en el aggregate usando el método público
         var entry = tracking.GetMealPlanEntries()
-            .FirstOrDefault(e => e.Id == command.MealPlanEntryId)
-            ?? throw new ArgumentException("Entry not found");
+                        .FirstOrDefault(e => e.Id == command.MealPlanEntryId)
+                    ?? throw new ArgumentException("Entry not found");
 
-        // Remover a través del aggregate y del repository
         tracking.RemoveMealPlanEntry(entry);
-        mealPlanEntryRepository.Remove(entry);
+        mealPlanEntryRepository.Remove(entry); // <- necesario para eliminarlo de la BD
         trackingRepository.Update(tracking);
+
         await unitOfWork.CompleteAsync();
     }
 
+
     public async Task<Domain.Model.Aggregates.Tracking?> Handle(UpdateMealPlanEntryInTrackingCommand command)
     {
-        var tracking = await trackingRepository.FindByIdAsync(command.TrackingId);
-        if (tracking is null) return null;
+        // 1. Primero obtener la entrada existente para conseguir el trackingId
+        var existingEntry = await mealPlanEntryRepository.FindByIdAsync(command.MealPlanEntryId);
+        if (existingEntry is null)
+            throw new ArgumentException("Entry not found");
 
-        // Buscar la entrada existente en el aggregate
-        var oldEntry = tracking.GetMealPlanEntries()
-            .FirstOrDefault(e => e.Id == command.MealPlanEntryId)
-            ?? throw new ArgumentException("Old entry not found");
+        // 2. Ahora cargar el tracking usando el trackingId de la entrada existente
+        var tracking = await trackingRepository.FindByIdWithEntriesAsync(existingEntry.TrackingId);
+        if (tracking is null)
+            throw new ArgumentException("Tracking not found");
 
-        var newType = await mealPlanTypeRepository.FindByNameAsync(command.MealPlanTypes)
-            ?? throw new ArgumentException("Invalid meal plan type");
+        // 🔍 Debug
+        Console.WriteLine($"MealPlanEntriesInternal count: {tracking.MealPlanEntriesInternal?.Count ?? 0}");
+        Console.WriteLine($"GetMealPlanEntries count: {tracking.GetMealPlanEntries().Count}");
+    
+        // 3. Obtener la entrada del tracking (ya sabemos que existe)
+        var entry = tracking.GetMealPlanEntries()
+                        .FirstOrDefault(e => e.Id == command.MealPlanEntryId)
+                    ?? throw new ArgumentException("Entry not found in tracking");
 
-        // Actualizar a través del aggregate y repositories
-        var updatedEntry = new MealPlanEntry(command.RecipeId, newType, command.DayNumber);
-        
-        tracking.RemoveMealPlanEntry(oldEntry);
-        mealPlanEntryRepository.Remove(oldEntry);
-        
-        tracking.AddMealPlanEntry(updatedEntry);
-        await mealPlanEntryRepository.AddAsync(updatedEntry);
+        // 4. Validar el tipo de meal plan
+        var type = await mealPlanTypeRepository.FindByNameAsync(command.MealPlanType)
+                   ?? throw new ArgumentException("Invalid meal plan type");
 
-        trackingRepository.Update(tracking);
+        // 🔄 Actualizamos propiedades
+        entry.RecipeId = command.RecipeId;
+        entry.MealPlanType = type;
+        entry.DayNumber = command.DayNumber;
+
+        // 🟩 Lo importante: asegurar persistencia
+        mealPlanEntryRepository.Update(entry);
+        trackingRepository.Update(tracking); // por consistencia del aggregate
+
         await unitOfWork.CompleteAsync();
 
         return tracking;
     }
+
 }
