@@ -36,4 +36,41 @@ public class MealPlanCommandService(IMealPlanRepository mealPlanRepository,
 
         return mealPlan;
     }
+
+    public async Task<MealPlan?> Handle(UpdateMealPlanCommand command)
+    {
+        var mealPlan = await mealPlanRepository.FindByIdAsync(command.Id);
+        if (mealPlan == null) return null;
+        
+        mealPlan.Update(command);
+        
+        try
+        {
+            mealPlanRepository.Update(mealPlan);
+            await unitOfWork.CompleteAsync();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+
+        return mealPlan;
+    }
+
+    public async Task<bool> Handle(DeleteMealPlanCommand command)
+    {
+        var mealPlan = await mealPlanRepository.FindByIdAsync(command.Id);
+        if (mealPlan == null) return false;
+        
+        try
+        {
+            mealPlanRepository.Remove(mealPlan);
+            await unitOfWork.CompleteAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
 }
