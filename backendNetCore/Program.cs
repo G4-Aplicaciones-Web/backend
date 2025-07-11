@@ -182,6 +182,7 @@ builder.Services.AddScoped<IExternalProfileService, ExternalProfileService>();
 builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
 
 
+
 // Profiles Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();

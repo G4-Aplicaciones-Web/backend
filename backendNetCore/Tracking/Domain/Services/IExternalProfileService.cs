@@ -6,5 +6,6 @@ public interface IExternalProfileService
 {
     Task<bool> ExistsProfileById(int profileId);
     Task<string?> GetObjectiveNameByProfileId(int profileId);
-    Task<TrackingGoal?> CreateTrackingGoalBasedOnProfile(int profileId);
+    Task<bool> ExistsUserById(int userId);
+    Task<TrackingGoal?> CreateTrackingGoalBasedOnProfile(int profileId, int userId);
 }

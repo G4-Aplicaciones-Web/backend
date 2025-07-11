@@ -114,17 +114,27 @@ public class TrackingGoalController(
         }
     }
     
+    // <summary>
+    /// Create a tracking goal based on profile objective with user validation
+    /// </summary>
+    /// <param name="profileId">The ID of the profile to get the objective from</param>
+    /// <param name="resource">The resource containing the userId to validate</param>
+    /// <returns>The created tracking goal</returns>
     [HttpPost("from-profile/{profileId:int}")]
-    [SwaggerOperation(Summary = "Create a tracking goal based on profile objective")]
-    public async Task<IActionResult> CreateTrackingGoalFromProfile(int profileId)
+    [SwaggerOperation(Summary = "Create a tracking goal based on profile objective with IAM user validation")]
+    public async Task<IActionResult> CreateTrackingGoalFromProfile(
+        int profileId, 
+        [FromBody] CreateTrackingGoalFromProfileResource resource)
     {
         try
         {
-            var trackingGoal = await externalProfileService.CreateTrackingGoalBasedOnProfile(profileId);
+            var trackingGoal = await externalProfileService.CreateTrackingGoalBasedOnProfile(
+                profileId, 
+                resource.UserId);
             
             return CreatedAtAction(
                 nameof(GetTrackingGoalByUserId), 
-                new { userId = profileId }, 
+                new { userId = resource.UserId },
                 TrackingGoalResourceFromEntityAssembler.ToResource(trackingGoal));
         }
         catch (InvalidOperationException ex)
