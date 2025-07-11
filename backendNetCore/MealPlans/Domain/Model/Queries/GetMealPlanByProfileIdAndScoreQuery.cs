@@ -5,4 +5,4 @@ namespace backendNetCore.MealPlans.Domain.Model.Queries;
 /// </summary>
 /// <param name="ProfileId"></param>
 /// <param name="Score"></param>
-public record GetMealPlanByProfileIdAndScoreQuery(string ProfileId, int Score);
+public record GetMealPlanByProfileIdAndScoreQuery(int ProfileId, int Score);

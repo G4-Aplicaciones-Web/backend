@@ -6,7 +6,7 @@ public partial class MealPlan
 {
     public int Id { get; set; }
     
-    public string ProfileId { get; set; }
+    public int ProfileId { get; set; }
     
     public string Summary { get; set; } 
     
@@ -14,7 +14,7 @@ public partial class MealPlan
 
     protected MealPlan()
     {
-        ProfileId = string.Empty;
+        ProfileId = 0;
         Summary = string.Empty;
         Score = 0;
     }

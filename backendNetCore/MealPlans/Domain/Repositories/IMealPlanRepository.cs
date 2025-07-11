@@ -7,8 +7,8 @@ public interface IMealPlanRepository : IBaseRepository<MealPlan>
 {
 
 
-    Task<IEnumerable<MealPlan>> FindByProfileIdAsync(string profileId);
+    Task<IEnumerable<MealPlan>> FindByProfileIdAsync(int profileId);
 
-    Task<MealPlan?> FindByProfileIdAndScoreAsync(string profileId, int score);
+    Task<MealPlan?> FindByProfileIdAndScoreAsync(int profileId, int score);
 
 }

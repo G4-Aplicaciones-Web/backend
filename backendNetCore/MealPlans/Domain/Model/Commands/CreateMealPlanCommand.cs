@@ -5,4 +5,4 @@ namespace backendNetCore.MealPlans.Domain.Model.Commands;
 /// <param name="ProfileId">The ProfileId pf the meal plans </param>
 /// <param name="Summary">The summary of the meal plan</param>
 /// <param name="Score">The meal plan score</param>
-public record CreateMealPlanCommand(string ProfileId, string Summary, int Score);
+public record CreateMealPlanCommand(int ProfileId, string Summary, int Score);
