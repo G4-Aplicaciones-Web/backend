@@ -15,11 +15,13 @@ using backendNetCore.MealPlans.Application.Internal.QueryServices;
 using backendNetCore.MealPlans.Domain.Repositories;
 using backendNetCore.MealPlans.Domain.Services;
 using backendNetCore.MealPlans.Infrastructure.Repositories;
+using backendNetCore.Profiles.Application.ACL;
 using backendNetCore.Profiles.Application.Internal.CommandServices;
 using backendNetCore.Profiles.Application.Internal.QueryServices;
 using backendNetCore.Profiles.Domain.Repositories;
 using backendNetCore.Profiles.Domain.Services;
 using backendNetCore.Profiles.Infrastructure.Persistence.EFC.Repositories;
+using backendNetCore.Profiles.Interfaces.ACL;
 using backendNetCore.Recipes.Application.Internal.CommandServices;
 using backendNetCore.Recipes.Application.Internal.QueryServices;
 using backendNetCore.Recipes.Domain.Repositories;
@@ -35,6 +37,7 @@ using backendNetCore.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Repositories;
 using backendNetCore.Tracking.Application.Internal.CommandServices;
+using backendNetCore.Tracking.Application.Internal.OutBoundServices.ACL;
 using backendNetCore.Tracking.Application.Internal.QueryServices;
 using backendNetCore.Tracking.Domain.Repositories;
 using backendNetCore.Tracking.Domain.Services;
@@ -174,6 +177,10 @@ builder.Services.AddScoped<ITrackingMacronutrientQueryService, TrackingMacronutr
 builder.Services.AddScoped<ITrackingGoalRepository, TrackingGoalRepository>();
 builder.Services.AddScoped<ITrackingGoalCommandService, TrackingGoalCommandService>();
 builder.Services.AddScoped<ITrackingGoalQueryService, TrackingGoalQueryService>();
+
+builder.Services.AddScoped<IExternalProfileService, ExternalProfileService>();
+builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
+
 
 // Profiles Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();

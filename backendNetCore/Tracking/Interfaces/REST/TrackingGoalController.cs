@@ -19,7 +19,8 @@ public class TrackingGoalController(
     ITrackingGoalCommandService trackingGoalCommandService,
     ITrackingGoalQueryService trackingGoalQueryService,
     ITrackingMacronutrientCommandService macronutrientCommandService,
-    ITrackingMacronutrientQueryService macronutrientQueryService)
+    ITrackingMacronutrientQueryService macronutrientQueryService,
+    IExternalProfileService externalProfileService)
     : ControllerBase
 {
     [HttpGet("user/{userId:long}")]
@@ -110,6 +111,29 @@ public class TrackingGoalController(
         catch (Exception ex)
         {
             return BadRequest($"Error updating tracking goal: {ex.Message}");
+        }
+    }
+    
+    [HttpPost("from-profile/{profileId:int}")]
+    [SwaggerOperation(Summary = "Create a tracking goal based on profile objective")]
+    public async Task<IActionResult> CreateTrackingGoalFromProfile(int profileId)
+    {
+        try
+        {
+            var trackingGoal = await externalProfileService.CreateTrackingGoalBasedOnProfile(profileId);
+            
+            return CreatedAtAction(
+                nameof(GetTrackingGoalByUserId), 
+                new { userId = profileId }, 
+                TrackingGoalResourceFromEntityAssembler.ToResource(trackingGoal));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while creating the tracking goal", details = ex.Message });
         }
     }
 }

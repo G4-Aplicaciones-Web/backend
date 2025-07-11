@@ -20,7 +20,6 @@ public class TrackingGoalCommandService : ITrackingGoalCommandService
         _unitOfWork = unitOfWork;
     }
 
-    // Comando existente - crear con macros específicos
     public async Task<TrackingGoal> Handle(CreateTrackingGoalCommand command)
     {
         var goal = new TrackingGoal(command.UserId, command.Macronutrient);
@@ -29,14 +28,28 @@ public class TrackingGoalCommandService : ITrackingGoalCommandService
         return goal;
     }
 
-    // Comando nuevo - crear basado en objetivo (ACL con Profile)
     public async Task<TrackingGoal> Handle(CreateTrackingGoalByObjectiveCommand command)
     {
-        var goalType = GoalType.FromDisplayName(command.GoalType);
-        var goal = new TrackingGoal(command.UserId, goalType);
-        await _repository.AddAsync(goal);
-        await _unitOfWork.CompleteAsync();
-        return goal;
+        // Verificar si ya existe un goal para este usuario
+        var existingGoal = await _repository.FindByUserIdAsync(command.UserId);
+        if (existingGoal != null)
+        {
+            throw new InvalidOperationException($"A tracking goal already exists for user {command.UserId}");
+        }
+
+        try
+        {
+            // Usar GoalType.FromDisplayName para convertir el string al GoalType correspondiente
+            var goalType = GoalType.FromDisplayName(command.GoalType);
+            var goal = new TrackingGoal(command.UserId, goalType);
+            await _repository.AddAsync(goal);
+            await _unitOfWork.CompleteAsync();
+            return goal;
+        }
+        catch (ArgumentException ex)
+        {
+            throw new InvalidOperationException($"Invalid goal type: {command.GoalType}", ex);
+        }
     }
 
     public async Task<TrackingGoal> Handle(UpdateTrackingGoalCommand command)
