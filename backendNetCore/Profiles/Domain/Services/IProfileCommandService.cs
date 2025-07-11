@@ -18,4 +18,10 @@ public interface IProfileCommandService
     /// The <see cref="Profile"/> object with the created profile
     /// </returns>
     Task<Profile?> Handle(CreateProfileCommand command);
+    
+    Task<Profile?> Handle(UpdateProfileCommand command);
+    
+    Task<Profile?> Handle(AddAllergyToProfileCommand command);
+    Task<Profile?> Handle(RemoveAllergyFromProfileCommand command);
+
 }

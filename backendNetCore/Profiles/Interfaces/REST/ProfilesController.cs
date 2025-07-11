@@ -54,4 +54,49 @@ public class ProfilesController(
         var profileResources = profiles.Select(ProfileResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(profileResources);
     }
+    
+    [HttpPut("{profileId:int}")]
+    [SwaggerOperation("Update Profile", "Update profile details (height, weight, activity level, objective).", OperationId = "UpdateProfile")]
+    [SwaggerResponse(200, "The profile was updated successfully.", typeof(ProfileResource))]
+    [SwaggerResponse(400, "The profile could not be updated.")]
+    public async Task<IActionResult> UpdateProfile(int profileId, [FromBody] UpdateProfileResource resource)
+    {
+        var command = UpdateProfileCommandFromResourceAssembler.ToCommandFromResource(profileId, resource);
+        var profile = await profileCommandService.Handle(command);
+        if (profile is null) return NotFound();
+
+        var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
+        return Ok(profileResource);
+    }
+
+    
+    [HttpPost("{profileId:int}/allergies")]
+    [SwaggerOperation("Add Allergy to Profile", "Adds a new allergy to the user's profile.", OperationId = "AddAllergyToProfile")]
+    [SwaggerResponse(200, "The allergy was added successfully.", typeof(ProfileResource))]
+    [SwaggerResponse(400, "The request was invalid.")]
+    public async Task<IActionResult> AddAllergyToProfile(int profileId, [FromBody] AddAllergyToProfileResource resource)
+    {
+        var command = AddAllergyToProfileCommandFromResourceAssembler.ToCommandFromResource(profileId, resource);
+        var profile = await profileCommandService.Handle(command);
+        if (profile is null) return NotFound();
+    
+        var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
+        return Ok(profileResource);
+    }
+
+    
+    [HttpDelete("{profileId:int}/allergies")]
+    [SwaggerOperation("Remove Allergy from Profile", "Removes an allergy from the user's profile.", OperationId = "RemoveAllergyFromProfile")]
+    [SwaggerResponse(200, "The allergy was removed successfully.", typeof(ProfileResource))]
+    [SwaggerResponse(400, "The request was invalid.")]
+    public async Task<IActionResult> RemoveAllergyFromProfile(int profileId, [FromBody] RemoveAllergyFromProfileResource resource)
+    {
+        var command = RemoveAllergyFromProfileCommandFromResourceAssembler.ToCommandFromResource(profileId, resource);
+        var profile = await profileCommandService.Handle(command);
+        if (profile is null) return NotFound();
+    
+        var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
+        return Ok(profileResource);
+    }
+
 }
