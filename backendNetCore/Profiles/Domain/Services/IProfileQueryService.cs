@@ -20,17 +20,6 @@ public interface IProfileQueryService
     Task<IEnumerable<Profile>> Handle(GetAllProfilesQuery query);
     
     /// <summary>
-    /// Handle get profile by email 
-    /// </summary>
-    /// <param name="query">
-    /// The <see cref="GetProfileByEmailQuery"/> query
-    /// </param>
-    /// <returns>
-    /// A <see cref="Profile"/> object or null
-    /// </returns>
-    Task<Profile?> Handle(GetProfileByEmailQuery query);
-    
-    /// <summary>
     /// Handle get profile by id 
     /// </summary>
     /// <param name="query">
@@ -40,4 +29,6 @@ public interface IProfileQueryService
     /// A <see cref="Profile"/> object or null
     /// /returns>
     Task<Profile?> Handle(GetProfileByIdQuery query);
+    
+    
 }
