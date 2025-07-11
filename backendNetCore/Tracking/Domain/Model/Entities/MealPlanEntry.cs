@@ -10,9 +10,9 @@ namespace backendNetCore.Tracking.Domain.Model.Entities;
 public class MealPlanEntry
 {
     public int Id { get; set; }
-    public RecipeId RecipeId { get; private set; }
-    public MealPlanType MealPlanType { get; private set; }
-    public int DayNumber { get; private set; }
+    public RecipeId RecipeId { get; set; }
+    public MealPlanType MealPlanType { get; set; }
+    public int DayNumber { get; set; }
     public int TrackingId { get; private set; }
     
     // 🔥 Propiedad de navegación necesaria para evitar el error

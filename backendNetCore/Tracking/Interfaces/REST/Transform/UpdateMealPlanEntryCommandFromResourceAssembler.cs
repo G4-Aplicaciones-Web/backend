@@ -9,9 +9,8 @@ public class UpdateMealPlanEntryCommandFromResourceAssembler
     public static UpdateMealPlanEntryInTrackingCommand ToCommand(UpdateMealPlanEntryResource resource, int mealPlanEntryId)
     {
         return new UpdateMealPlanEntryInTrackingCommand(
-            resource.TrackingId,
             mealPlanEntryId,
-            new RecipeId(resource.RecipeId),
+            new RecipeId((int)resource.RecipeId),
             Enum.Parse<MealPlanTypes>(resource.MealPlanType, true),
             resource.DayNumber
         );

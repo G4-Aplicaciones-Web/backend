@@ -33,4 +33,15 @@ public partial class MealPlan
         Summary = command.Summary;
         Score = command.Score;
     }
+    
+    /// <summary>
+    /// Updates the meal plan with new data
+    /// </summary>
+    /// <param name="command">The update command containing new data</param>
+    public void Update(UpdateMealPlanCommand command)
+    {
+        ProfileId = command.ProfileId;
+        Summary = command.Summary;
+        Score = command.Score;
+    }
 }

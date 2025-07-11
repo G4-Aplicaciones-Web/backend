@@ -1,4 +1,6 @@
+using backendNetCore.IAM.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using backendNetCore.MealPlans.Domain.Model.Aggregates;
+using backendNetCore.Profiles.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using backendNetCore.Recipes.Domain.Model.Aggregates;
 using backendNetCore.Recipes.Domain.Model.Entities;
 using backendNetCore.Recommendations.Domain.Model.Aggregates;
@@ -306,6 +308,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<TrackingMacronutrient>().Property(m => m.Carbs).IsRequired();
         modelBuilder.Entity<TrackingMacronutrient>().Property(m => m.Proteins).IsRequired();
         modelBuilder.Entity<TrackingMacronutrient>().Property(m => m.Fats).IsRequired();
+        
+        modelBuilder.ApplyProfilesConfiguration();
+        
+        modelBuilder.ApplyIamConfiguration();
         
         modelBuilder.UseSnakeCaseNamingConvention();
     }

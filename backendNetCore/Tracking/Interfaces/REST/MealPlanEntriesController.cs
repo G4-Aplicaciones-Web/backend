@@ -16,7 +16,7 @@ public class MealPlanEntriesController(
     ITrackingQueryService trackingQueryService,
     ITrackingCommandService trackingCommandService) : ControllerBase
 {
-    [HttpPost("{trackingId:long}")]
+    [HttpPost("tracking/{trackingId:long}")] // ⚠️ Cambiado para evitar conflicto con PUT
     [SwaggerOperation(Summary = "Add a meal plan entry to tracking", OperationId = "CreateMealPlanEntry")]
     [SwaggerResponse(StatusCodes.Status201Created, "Meal plan entry created")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid request")]
@@ -34,10 +34,10 @@ public class MealPlanEntriesController(
         }
     }
 
-    [HttpGet("tracking/{trackingId:long}")]
+    [HttpGet("tracking/{trackingId:int}")]
     [SwaggerOperation(Summary = "Get all meals for a tracking", OperationId = "GetAllMeals")]
     [SwaggerResponse(StatusCodes.Status200OK, "Meals retrieved", typeof(IEnumerable<MealPlanEntriesResource>))]
-    public async Task<IActionResult> GetAllMeals([FromRoute] int trackingId)
+    public async Task<IActionResult> GetAllMeals([FromRoute] int trackingId) // también ajustado a `long`
     {
         var query = new GetAllMealsQuery(trackingId);
         var meals = await trackingQueryService.Handle(query);
@@ -45,7 +45,7 @@ public class MealPlanEntriesController(
         return Ok(resources);
     }
 
-    [HttpPut("{mealPlanEntryId:long}")]
+    [HttpPut("{mealPlanEntryId:int}")]
     [SwaggerOperation(Summary = "Update a meal plan entry", OperationId = "UpdateMealPlanEntry")]
     [SwaggerResponse(StatusCodes.Status200OK)]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]
@@ -65,7 +65,8 @@ public class MealPlanEntriesController(
         }
     }
 
-    [HttpDelete("tracking/{trackingId:long}/entry/{mealPlanEntryId:long}")]
+
+    [HttpDelete("tracking/{trackingId:int}/entry/{mealPlanEntryId:int}")]
     [SwaggerOperation(Summary = "Remove a meal plan entry", OperationId = "RemoveMealPlanEntry")]
     [SwaggerResponse(StatusCodes.Status204NoContent)]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]

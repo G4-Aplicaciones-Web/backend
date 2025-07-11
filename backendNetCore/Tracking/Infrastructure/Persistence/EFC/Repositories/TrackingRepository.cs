@@ -33,4 +33,18 @@ public class TrackingRepository(AppDbContext context) : BaseRepository<Domain.Mo
             .Include(t => t.MealPlanEntriesInternal)
             .Include(t => t.TrackingGoal)
             .ToListAsync();
+    
+    public async Task<Domain.Model.Aggregates.Tracking?> FindByIdWithRelationsAsync(long id) =>
+        await Context.Set<Domain.Model.Aggregates.Tracking>()
+            .Include(t => t.MealPlanEntriesInternal)
+            .Include(t => t.TrackingGoal)
+            .Where(t => t.Id == id)
+            .FirstOrDefaultAsync();
+    
+    public async Task<Domain.Model.Aggregates.Tracking?> FindByIdWithEntriesAsync(long id) =>
+        await Context.Set<Domain.Model.Aggregates.Tracking>()
+            .Include(t => t.MealPlanEntriesInternal)
+            .Include(t => t.TrackingGoal)
+            .Where(t => t.Id == id)
+            .FirstOrDefaultAsync();
 }

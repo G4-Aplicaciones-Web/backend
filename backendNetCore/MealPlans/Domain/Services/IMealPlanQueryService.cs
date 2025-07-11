@@ -46,4 +46,15 @@ public interface IMealPlanQueryService
     /// <returns> The meal plan object if found, or null otherwise</returns>
 
     Task<MealPlan?> Handle(GetMealPlanByProfileIdAndScoreQuery query);
+    
+    /// <summary>
+    /// Handle the GetAllMealPlansQuery
+    /// </summary>
+    /// <remarks>
+    /// This method handles the GetAllMealPlansQuery. It returns all
+    /// meal plans in the system.
+    /// </remarks>
+    /// <param name="query">The GetAllMealPlansQuery</param>
+    /// <returns>An IEnumerable containing all meal plan objects</returns>
+    Task<IEnumerable<MealPlan>> Handle(GetAllMealPlansQuery query);
 }

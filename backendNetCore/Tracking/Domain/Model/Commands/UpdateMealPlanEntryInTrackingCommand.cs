@@ -20,4 +20,8 @@ namespace backendNetCore.Tracking.Domain.Model.Commands;
 /// <param name="NewDayNumber">
 /// The new day number for the meal plan entry
 /// </param>
-public record UpdateMealPlanEntryInTrackingCommand(int TrackingId, int MealPlanEntryId, RecipeId RecipeId, MealPlanTypes MealPlanTypes, int DayNumber);
+public record UpdateMealPlanEntryInTrackingCommand(
+    int MealPlanEntryId,
+    RecipeId RecipeId,
+    MealPlanTypes MealPlanType,
+    int DayNumber);
