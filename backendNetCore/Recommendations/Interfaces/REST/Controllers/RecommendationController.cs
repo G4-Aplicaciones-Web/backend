@@ -1,6 +1,6 @@
+
 using backendNetCore.Recommendations.Application.Internal.CommandServices;
 using backendNetCore.Recommendations.Application.Internal.QueryServices;
-using backendNetCore.Recommendations.Domain.Model.Commands;
 using backendNetCore.Recommendations.Interfaces.REST.Resources;
 using backendNetCore.Recommendations.Interfaces.REST.Transform;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +20,7 @@ public class RecommendationsController : ControllerBase
         _queryService = queryService;
     }
 
+    // GET endpoints
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RecommendationResource>>> GetAll()
     {
@@ -46,6 +47,7 @@ public class RecommendationsController : ControllerBase
         return Ok(resources);
     }
 
+    // POST endpoints
     [HttpPost]
     public async Task<ActionResult<RecommendationResource>> Create([FromBody] CreateRecommendationResource resource)
     {
@@ -55,6 +57,53 @@ public class RecommendationsController : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = resultResource.Id }, resultResource);
     }
+
+    [HttpPost("base")]
+    public async Task<ActionResult<RecommendationResource>> CreateBase([FromBody] CreateBaseRecommendationResource resource)
+    {
+        var command = CreateBaseRecommendationCommandFromResourceAssembler.ToCommandFromResource(resource);
+        var recommendation = await _commandService.Handle(command);
+        var resultResource = RecommendationResourceAssembler.ToResourceFromEntity(recommendation);
+
+        return CreatedAtAction(nameof(GetById), new { id = resultResource.Id }, resultResource);
+    }
+
+    [HttpPost("auto-assign")]
+    public async Task<ActionResult<IEnumerable<RecommendationResource>>> AutoAssignRecommendations([FromBody] AutoAssignRecommendationsResource resource)
+    {
+        try
+        {
+            var command = AutoAssignRecommendationsCommandFromResourceAssembler.ToCommandFromResource(resource);
+            var recommendations = await _commandService.Handle(command);
+            var resources = RecommendationResourceAssembler.ToResourceListFromEntityList(recommendations);
+
+            return Ok(resources);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // PUT endpoints
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<RecommendationResource>> Update(int id, [FromBody] UpdateRecommendationResource resource)
+    {
+        try
+        {
+            var command = UpdateRecommendationCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+            var recommendation = await _commandService.Handle(command);
+            var resultResource = RecommendationResourceAssembler.ToResourceFromEntity(recommendation);
+
+            return Ok(resultResource);
+        }
+        catch (ArgumentException)
+        {
+            return NotFound();
+        }
+    }
+
+    // DELETE endpoints
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -63,3 +112,4 @@ public class RecommendationsController : ControllerBase
         return NoContent();
     }
 }
+// This controller handles all CRUD operations for recommendations, including auto-assigning recommendations to users.

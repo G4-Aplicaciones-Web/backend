@@ -6,4 +6,4 @@ namespace backendNetCore.MealPlans.Interfaces.REST.Resources;
 /// <param name="ProfileId"></param>
 /// <param name="Summary"></param>
 /// <param name="Score"></param>
-public record MealPlanResource(int Id, string ProfileId, string Summary, int Score);
+public record MealPlanResource(int Id, int ProfileId, string Summary, int Score);

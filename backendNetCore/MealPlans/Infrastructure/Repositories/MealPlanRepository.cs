@@ -9,13 +9,13 @@ namespace backendNetCore.MealPlans.Infrastructure.Repositories;
 public class MealPlanRepository(AppDbContext context)
 : BaseRepository<MealPlan>(context), IMealPlanRepository
 {
-    public async Task<IEnumerable<MealPlan>> FindByProfileIdAsync(string profileId)
+    public async Task<IEnumerable<MealPlan>> FindByProfileIdAsync(int profileId)
     {
         return await Context.Set<MealPlan>()
             .Where(m => m.ProfileId == profileId).ToListAsync();
     }
 
-    public async Task<MealPlan?> FindByProfileIdAndScoreAsync(string profileId, int score)
+    public async Task<MealPlan?> FindByProfileIdAndScoreAsync(int profileId, int score)
     {
         return await Context.Set<MealPlan>()
             .FirstOrDefaultAsync(m => m.ProfileId == profileId && m.Score == score);

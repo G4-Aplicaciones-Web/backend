@@ -1,5 +1,6 @@
 ﻿using System.Net.Mime;
 using backendNetCore.Tracking.Domain.Model.Commands;
+using backendNetCore.Tracking.Domain.Model.Entities;
 using backendNetCore.Tracking.Domain.Model.Queries;
 using backendNetCore.Tracking.Domain.Model.ValueObjects;
 using backendNetCore.Tracking.Domain.Services;
@@ -18,7 +19,8 @@ public class TrackingGoalController(
     ITrackingGoalCommandService trackingGoalCommandService,
     ITrackingGoalQueryService trackingGoalQueryService,
     ITrackingMacronutrientCommandService macronutrientCommandService,
-    ITrackingMacronutrientQueryService macronutrientQueryService)
+    ITrackingMacronutrientQueryService macronutrientQueryService,
+    IExternalProfileService externalProfileService)
     : ControllerBase
 {
     [HttpGet("user/{userId:long}")]
@@ -59,5 +61,79 @@ public class TrackingGoalController(
         var goalId = await trackingGoalCommandService.Handle(command);
 
         return CreatedAtAction(nameof(GetTrackingGoalByUserId), new { userId = resource.UserId }, goalId);
+    }
+    
+    [HttpPost("by-objective")]
+    [SwaggerOperation(Summary = "Create a new tracking goal based on objective type")]
+    public async Task<IActionResult> CreateTrackingGoalByObjective([FromBody] CreateTrackingGoalByObjectiveResource resource)
+    {
+        try
+        {
+            var command = new CreateTrackingGoalByObjectiveCommand(new UserId(resource.UserId), resource.GoalType);
+            var result = await trackingGoalCommandService.Handle(command);
+            
+            return CreatedAtAction(
+                nameof(GetTrackingGoalByUserId), 
+                new { userId = resource.UserId }, 
+                TrackingGoalResourceFromEntityAssembler.ToResource(result));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Invalid goal type: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error creating tracking goal: {ex.Message}");
+        }
+    }
+
+    [HttpPut("{userId:int}")]
+    [SwaggerOperation(Summary = "Update tracking goal for a user")]
+    public async Task<IActionResult> UpdateTrackingGoal(int userId, [FromBody] UpdateTrackingGoalResource resource)
+    {
+        try
+        {
+            var goalType = GoalType.FromDisplayName(resource.GoalType);
+            var command = new UpdateTrackingGoalCommand(new UserId(userId), goalType);
+            
+            var result = await trackingGoalCommandService.Handle(command);
+            
+            return Ok(TrackingGoalResourceFromEntityAssembler.ToResource(result));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Invalid goal type: {ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error updating tracking goal: {ex.Message}");
+        }
+    }
+    
+    [HttpPost("from-profile/{profileId:int}")]
+    [SwaggerOperation(Summary = "Create a tracking goal based on profile objective")]
+    public async Task<IActionResult> CreateTrackingGoalFromProfile(int profileId)
+    {
+        try
+        {
+            var trackingGoal = await externalProfileService.CreateTrackingGoalBasedOnProfile(profileId);
+            
+            return CreatedAtAction(
+                nameof(GetTrackingGoalByUserId), 
+                new { userId = profileId }, 
+                TrackingGoalResourceFromEntityAssembler.ToResource(trackingGoal));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while creating the tracking goal", details = ex.Message });
+        }
     }
 }
