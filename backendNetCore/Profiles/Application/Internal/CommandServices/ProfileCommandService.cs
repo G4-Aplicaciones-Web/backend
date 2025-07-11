@@ -35,4 +35,66 @@ public class ProfileCommandService(
             return null;
         }
     }
+
+    public async Task<Profile?> Handle(UpdateProfileCommand command)
+    {
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
+        if (profile is null) return null;
+
+        profile.UpdateProfile(command.Height, command.Weight, command.ActivityLevelId, command.ObjectiveId);
+
+        try
+        {
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch (Exception)
+        {
+            // Log error
+            return null;
+        }
+    }
+
+
+    public async Task<Profile?> Handle(AddAllergyToProfileCommand command)
+    {
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
+        if (profile is null) return null;
+
+        profile.AddAllergy(command.AllergyName);
+
+        try
+        {
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch (Exception)
+        {
+            // Log error
+            return null;
+        }
+    }
+
+
+    public async Task<Profile?> Handle(RemoveAllergyFromProfileCommand command)
+    {
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
+        if (profile is null) return null;
+
+        profile.RemoveAllergy(command.AllergyName);
+
+        try
+        {
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch (Exception)
+        {
+            // Log error
+            return null;
+        }
+    }
 }
