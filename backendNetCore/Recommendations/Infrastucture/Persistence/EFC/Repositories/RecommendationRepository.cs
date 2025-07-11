@@ -38,6 +38,16 @@ public class RecommendationRepository : IRecommendationRepository
         );
     }
 
+    public async Task<IEnumerable<Recommendation>> GetBaseRecommendationsAsync()
+    {
+        return await Task.FromResult(
+            _context.Recommendations
+                .Include(r => r.Template)
+                .AsEnumerable()
+                .Where(r => r.UserId.Value == 0)
+                .ToList()
+        );
+    }
 
     public async Task AddAsync(Recommendation recommendation)
     {
@@ -61,5 +71,4 @@ public class RecommendationRepository : IRecommendationRepository
         _context.Recommendations.Remove(recommendation);
         await _context.SaveChangesAsync();
     }
-    
 }
