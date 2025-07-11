@@ -1,3 +1,4 @@
+
 using backendNetCore.Recommendations.Domain.Model.Entities;
 using backendNetCore.Recommendations.Domain.Model.ValueObjects;
 
@@ -38,6 +39,26 @@ public partial class Recommendation
         TimeOfDay timeOfDay, double score, RecommendationStatus status)
     {
         return new Recommendation(userId, templateId, reason, notes, timeOfDay, score, status);
+    }
+
+    public static Recommendation CreateBase(int templateId, string reason, string notes,
+        TimeOfDay timeOfDay, double score, RecommendationStatus status)
+    {
+        return new Recommendation(new UserId(0), templateId, reason, notes, timeOfDay, score, status);
+    }
+
+    public Recommendation CreateCopyForUser(UserId userId)
+    {
+        return new Recommendation(userId, TemplateId, Reason, Notes, TimeOfDay, Score, Status);
+    }
+
+    public void Update(string reason, string notes, TimeOfDay timeOfDay, double score, RecommendationStatus status)
+    {
+        Reason = reason;
+        Notes = notes;
+        TimeOfDay = timeOfDay;
+        Score = score;
+        Status = status;
     }
 
     public void Deactivate() => Status = RecommendationStatus.Inactive;
