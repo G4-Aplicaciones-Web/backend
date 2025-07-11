@@ -15,9 +15,5 @@ namespace backendNetCore.Profiles.Infrastructure.Persistence.EFC.Repositories;
 public class ProfileRepository(AppDbContext context) 
     : BaseRepository<Profile>(context), IProfileRepository
 {
-    /// <inheritdoc />
-    public async Task<Profile?> FindProfileByEmailAsync(EmailAddress email)
-    {
-        return Context.Set<Profile>().FirstOrDefault(p => p.Email == email);
-    }
+
 }

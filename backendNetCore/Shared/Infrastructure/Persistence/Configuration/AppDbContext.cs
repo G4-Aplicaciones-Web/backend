@@ -158,156 +158,200 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<MealPlan>().Property(m => m.Summary).IsRequired().HasMaxLength(100);
         modelBuilder.Entity<MealPlan>().Property(m => m.Score).IsRequired().HasDefaultValue(10);
         
-        // =================== TRACKING CONTEXT ==================
-        
-         // Tracking - Configuración principal
-         modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .HasKey(t => t.Id);
+        // =================== TRACKING CONTEXT - COMPLETAMENTE CORREGIDO ==================
+                   // Tracking - Configuración principal
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .HasKey(t => t.Id);
+                   
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .Property(t => t.Id)
+                       .IsRequired()
+                       .ValueGeneratedOnAdd();
+                   
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .Property(t => t.Date)
+                       .HasColumnName("tracking_date")
+                       .IsRequired();
+                   
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .Property(t => t.UserProfileId)
+                       .HasConversion(
+                           v => v.Id,
+                           v => new UserId(v))
+                       .HasColumnName("user_profile_id");
+                   
+                   // Shadow properties para foreign keys con nombres de columnas específicos
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .Property<int>("TrackingGoalId")
+                       .HasColumnName("tracking_goal_id");
+                   
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .Property<int>("TrackingMacronutrientId")
+                       .HasColumnName("tracking_macronutrient_id");
+                   
+                   // Relaciones de Tracking
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .HasOne(t => t.TrackingGoal)
+                       .WithMany()
+                       .HasForeignKey("TrackingGoalId")
+                       .OnDelete(DeleteBehavior.Cascade);
+                   
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .HasOne(t => t.TrackingMacronutrient)
+                       .WithMany()
+                       .HasForeignKey("TrackingMacronutrientId")
+                       .OnDelete(DeleteBehavior.Cascade);
+                   
+                   // Ignorar la propiedad calculada MealPlanEntryList
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .Ignore(t => t.MealPlanEntryList);
+                   
+                   // Configurar la relación Tracking -> MealPlanEntry (uno a muchos)
+                   modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
+                       .HasMany(t => t.MealPlanEntriesInternal)
+                       .WithOne(e => e.Tracking)
+                       .HasForeignKey(e => e.TrackingId)
+                       .OnDelete(DeleteBehavior.Cascade);
+                   
+                   // MealPlanEntry - Configuración como entidad independiente
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .HasKey(e => e.Id);
+                   
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .Property(e => e.Id)
+                       .IsRequired()
+                       .ValueGeneratedOnAdd();
+                   
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .Property(e => e.DayNumber)
+                       .HasColumnName("day_number")
+                       .IsRequired();
+                   
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .Property(e => e.TrackingId)
+                       .HasColumnName("tracking_id")
+                       .IsRequired();
+                   
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .Property(e => e.RecipeId)
+                       .HasConversion(
+                           v => v.Id,
+                           v => new RecipeId(v))
+                       .HasColumnName("recipe_id");
+                   
+                   // Configurar la relación MealPlanEntry -> Tracking
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .HasOne(e => e.Tracking)
+                       .WithMany(t => t.MealPlanEntriesInternal)
+                       .HasForeignKey(e => e.TrackingId)
+                       .OnDelete(DeleteBehavior.Cascade);
+                   
+                   // Configurar la relación con MealPlanType
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .HasOne(e => e.MealPlanType)
+                       .WithMany()
+                       .HasForeignKey("MealPlanTypeId")
+                       .IsRequired();
+                   
+                   modelBuilder.Entity<MealPlanEntry>()
+                       .Property<long>("MealPlanTypeId")
+                       .HasColumnName("meal_plan_type_id");
+                   
+                   // MealPlanType - Configuración como entidad independiente
+                   modelBuilder.Entity<MealPlanType>()
+                       .HasKey(m => m.Id);
+                   
+                   modelBuilder.Entity<MealPlanType>()
+                       .Property(m => m.Id)
+                       .IsRequired()
+                       .ValueGeneratedOnAdd();
+                   
+                   modelBuilder.Entity<MealPlanType>()
+                       .Property(m => m.Name)
+                       .HasConversion<string>()
+                       .HasMaxLength(20)
+                       .IsRequired()
+                       .HasColumnName("name");
+                   
+                   // Seed Data de MealPlanType
+                   modelBuilder.Entity<MealPlanType>().HasData(
+                       new MealPlanType { Id = 1, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Breakfast") },
+                       new MealPlanType { Id = 2, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Lunch") },
+                       new MealPlanType { Id = 3, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Dinner") },
+                       new MealPlanType { Id = 4, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Healthy") }
+                   );
+                   
+                   // TrackingGoal - CONFIGURACIÓN CORREGIDA
+                   modelBuilder.Entity<TrackingGoal>()
+                       .HasKey(g => g.Id);
+                   
+                   modelBuilder.Entity<TrackingGoal>()
+                       .Property(g => g.Id)
+                       .IsRequired()
+                       .ValueGeneratedOnAdd();
+                   
+                   modelBuilder.Entity<TrackingGoal>()
+                       .Property(g => g.UserId)
+                       .HasConversion(
+                           v => v.Id,
+                           v => new UserId(v))
+                       .HasColumnName("user_id");
+                   
+                   // *** CONFIGURACIÓN PARA GOALTYPE ***
+                   modelBuilder.Entity<TrackingGoal>()
+                       .Property(g => g.GoalType)
+                       .HasColumnName("goal_type")
+                       .HasMaxLength(50)
+                       .HasConversion(
+                           v => v.DisplayName,
+                           v => GoalType.FromDisplayName(v))
+                       .IsRequired();
+                   
+                   // Shadow property para foreign key
+                   modelBuilder.Entity<TrackingGoal>()
+                       .Property<int>("TargetMacrosId")
+                       .HasColumnName("target_macros_id");
+                   
+                   modelBuilder.Entity<TrackingGoal>()
+                       .HasOne(g => g.TargetMacros)
+                       .WithMany()
+                       .HasForeignKey("TargetMacrosId")
+                       .OnDelete(DeleteBehavior.Cascade);
+                   
+                   // TrackingMacronutrient - CONFIGURACIÓN CORREGIDA
+                   modelBuilder.Entity<TrackingMacronutrient>()
+                       .HasKey(m => m.Id);
+                   
+                   modelBuilder.Entity<TrackingMacronutrient>()
+                       .Property(m => m.Id)
+                       .IsRequired()
+                       .ValueGeneratedOnAdd();
+                   
+                   modelBuilder.Entity<TrackingMacronutrient>()
+                       .Property(m => m.Calories)
+                       .HasColumnName("calories")
+                       .HasColumnType("decimal(18,2)")
+                       .IsRequired();
+                   
+                   modelBuilder.Entity<TrackingMacronutrient>()
+                       .Property(m => m.Carbs)
+                       .HasColumnName("carbs")
+                       .HasColumnType("decimal(18,2)")
+                       .IsRequired();
+                   
+                   modelBuilder.Entity<TrackingMacronutrient>()
+                       .Property(m => m.Proteins)
+                       .HasColumnName("proteins")
+                       .HasColumnType("decimal(18,2)")
+                       .IsRequired();
+                   
+                   modelBuilder.Entity<TrackingMacronutrient>()
+                       .Property(m => m.Fats)
+                       .HasColumnName("fats")
+                       .HasColumnType("decimal(18,2)")
+                       .IsRequired();
 
-         modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .Property(t => t.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
 
-         modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .Property(t => t.Date)
-            .HasColumnName("tracking_date")
-            .IsRequired();
-
-         modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .Property(t => t.UserProfileId)
-            .HasConversion(
-                v => v.Id,
-                v => new UserId(v))
-            .HasColumnName("user_profile_id");
-
-        // MealPlanEntry - Configuración como entidad independiente
-        modelBuilder.Entity<MealPlanEntry>()
-            .HasKey(e => e.Id);
-
-        modelBuilder.Entity<MealPlanEntry>()
-            .Property(e => e.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
-
-        modelBuilder.Entity<MealPlanEntry>()
-            .Property(e => e.DayNumber)
-            .HasColumnName("day_number")
-            .IsRequired();
-
-        // Configurar TrackingId con el nombre de columna correcto
-        modelBuilder.Entity<MealPlanEntry>()
-            .Property(e => e.TrackingId)
-            .HasColumnName("tracking_id")
-            .IsRequired();
-
-        modelBuilder.Entity<MealPlanEntry>()
-            .Property(e => e.RecipeId)
-            .HasConversion(
-                v => v.Id,
-                v => new RecipeId(v))
-            .HasColumnName("recipe_id");
-
-        // Configurar la relación MealPlanEntry -> Tracking (SIN HasColumnName)
-        modelBuilder.Entity<MealPlanEntry>()
-            .HasOne<Tracking.Domain.Model.Aggregates.Tracking>()
-            .WithMany()
-            .HasForeignKey(e => e.TrackingId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Configurar la relación con MealPlanType (entidad independiente)
-        modelBuilder.Entity<MealPlanEntry>()
-            .HasOne(e => e.MealPlanType)
-            .WithMany()
-            .HasForeignKey("MealPlanTypeId")
-            .IsRequired();
-
-        // Configurar el nombre de la columna para la foreign key shadow property
-        modelBuilder.Entity<MealPlanEntry>()
-            .Property<long>("MealPlanTypeId")
-            .HasColumnName("meal_plan_type_id");
-
-        // Ignorar la propiedad calculada MealPlanEntryList
-        modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .Ignore(t => t.MealPlanEntryList);
-
-        // Configurar la relación Tracking -> MealPlanEntry (uno a muchos)
-        modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .HasMany(t => t.MealPlanEntriesInternal)
-            .WithOne(e => e.Tracking) // ← esta parte es CLAVE
-            .HasForeignKey(e => e.TrackingId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .HasOne(t => t.TrackingGoal)
-            .WithMany()
-            .HasForeignKey("TrackingGoalId")
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Tracking.Domain.Model.Aggregates.Tracking>()
-            .HasOne(t => t.TrackingMacronutrient)
-            .WithOne()
-            .HasForeignKey<Tracking.Domain.Model.Aggregates.Tracking>("TrackingMacronutrientId")
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // MealPlanType - Solo si es una entidad independiente
-        modelBuilder.Entity<MealPlanType>()
-            .HasKey(m => m.Id);
-
-        modelBuilder.Entity<MealPlanType>()
-            .Property(m => m.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
-
-        modelBuilder.Entity<MealPlanType>()
-            .Property(m => m.Name)
-            .HasConversion<string>()
-            .HasMaxLength(20)
-            .IsRequired()
-            .HasColumnName("name");
-        
-        // Seed Data de MealPlanType
-        modelBuilder.Entity<MealPlanType>().HasData(
-            new MealPlanType { Id = 1, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Breakfast") },
-            new MealPlanType { Id = 2, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Lunch") },
-            new MealPlanType { Id = 3, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Dinner") },
-            new MealPlanType { Id = 4, Name = (MealPlanTypes)Enum.Parse(typeof(MealPlanTypes), "Healthy") }
-        );
-
-        // TrackingGoal
-        modelBuilder.Entity<TrackingGoal>()
-            .HasKey(g => g.Id);
-
-        modelBuilder.Entity<TrackingGoal>()
-            .Property(g => g.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
-
-        modelBuilder.Entity<TrackingGoal>()
-            .Property(g => g.UserId)
-            .HasConversion(
-                v => v.Id,
-                v => new UserId(v))
-            .HasColumnName("user_id");
-
-        modelBuilder.Entity<TrackingGoal>()
-            .HasOne(g => g.TargetMacros)
-            .WithMany()
-            .HasForeignKey("TargetMacrosId");
-
-        // TrackingMacronutrient
-        modelBuilder.Entity<TrackingMacronutrient>()
-            .HasKey(m => m.Id);
-
-        modelBuilder.Entity<TrackingMacronutrient>()
-            .Property(m => m.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
-
-        modelBuilder.Entity<TrackingMacronutrient>().Property(m => m.Calories).IsRequired();
-        modelBuilder.Entity<TrackingMacronutrient>().Property(m => m.Carbs).IsRequired();
-        modelBuilder.Entity<TrackingMacronutrient>().Property(m => m.Proteins).IsRequired();
-        modelBuilder.Entity<TrackingMacronutrient>().Property(m => m.Fats).IsRequired();
         
         modelBuilder.ApplyProfilesConfiguration();
         

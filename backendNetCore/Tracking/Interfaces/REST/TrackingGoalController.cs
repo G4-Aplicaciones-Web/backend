@@ -1,5 +1,6 @@
 ﻿using System.Net.Mime;
 using backendNetCore.Tracking.Domain.Model.Commands;
+using backendNetCore.Tracking.Domain.Model.Entities;
 using backendNetCore.Tracking.Domain.Model.Queries;
 using backendNetCore.Tracking.Domain.Model.ValueObjects;
 using backendNetCore.Tracking.Domain.Services;
@@ -59,5 +60,56 @@ public class TrackingGoalController(
         var goalId = await trackingGoalCommandService.Handle(command);
 
         return CreatedAtAction(nameof(GetTrackingGoalByUserId), new { userId = resource.UserId }, goalId);
+    }
+    
+    [HttpPost("by-objective")]
+    [SwaggerOperation(Summary = "Create a new tracking goal based on objective type")]
+    public async Task<IActionResult> CreateTrackingGoalByObjective([FromBody] CreateTrackingGoalByObjectiveResource resource)
+    {
+        try
+        {
+            var command = new CreateTrackingGoalByObjectiveCommand(new UserId(resource.UserId), resource.GoalType);
+            var result = await trackingGoalCommandService.Handle(command);
+            
+            return CreatedAtAction(
+                nameof(GetTrackingGoalByUserId), 
+                new { userId = resource.UserId }, 
+                TrackingGoalResourceFromEntityAssembler.ToResource(result));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Invalid goal type: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error creating tracking goal: {ex.Message}");
+        }
+    }
+
+    [HttpPut("{userId:int}")]
+    [SwaggerOperation(Summary = "Update tracking goal for a user")]
+    public async Task<IActionResult> UpdateTrackingGoal(int userId, [FromBody] UpdateTrackingGoalResource resource)
+    {
+        try
+        {
+            var goalType = GoalType.FromDisplayName(resource.GoalType);
+            var command = new UpdateTrackingGoalCommand(new UserId(userId), goalType);
+            
+            var result = await trackingGoalCommandService.Handle(command);
+            
+            return Ok(TrackingGoalResourceFromEntityAssembler.ToResource(result));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Invalid goal type: {ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error updating tracking goal: {ex.Message}");
+        }
     }
 }
