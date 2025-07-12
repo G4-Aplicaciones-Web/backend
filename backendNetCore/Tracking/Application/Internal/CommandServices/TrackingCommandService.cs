@@ -1,9 +1,10 @@
-﻿using backendNetCore.Shared.Domain.Repositories;
+﻿using backendNetCore.IAM.Interfaces.ACL;
+using backendNetCore.Shared.Domain.Repositories;
 using backendNetCore.Tracking.Domain.Model.Commands;
 using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
 using backendNetCore.Tracking.Domain.Repositories;
 using backendNetCore.Tracking.Domain.Services;
-using backendNetCore.Shared.Domain.Repositories;
 
 namespace backendNetCore.Tracking.Application.Internal.CommandServices;
 
@@ -16,17 +17,22 @@ namespace backendNetCore.Tracking.Application.Internal.CommandServices;
 /// <param name="macronutrientValuesRepository">TrackingMacronutrient repository</param>
 /// <param name="mealPlanTypeRepository">MealPlanType repository</param>
 /// <param name="unitOfWork">Unit of work</param>
+/// <param name="iamContextFacade">IAM context facade for user validation</param>
 public class TrackingCommandService(
     ITrackingRepository trackingRepository,
     IMealPlanEntryRepository mealPlanEntryRepository,
     ITrackingGoalRepository trackingGoalRepository,
     ITrackingMacronutrientRepository macronutrientValuesRepository,
     IMealPlanTypeRepository mealPlanTypeRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IIamContextFacade iamContextFacade)
     : ITrackingCommandService
 {
     public async Task<Domain.Model.Aggregates.Tracking> Handle(CreateTrackingCommand command)
     {
+        // Validar que el usuario existe en el contexto IAM
+        await ValidateUserExistsInIam(command.UserId);
+
         if (await trackingRepository.ExistsByUserIdAsync(command.UserId))
             throw new ArgumentException($"Tracking already exists for user: {command.UserId}");
 
@@ -45,6 +51,9 @@ public class TrackingCommandService(
 
     public async Task<MealPlanEntry> Handle(CreateMealPlanEntryToTrackingCommand command)
     {
+        // Validar que el usuario existe en el contexto IAM
+        await ValidateUserExistsInIam(command.UserId);
+
         var tracking = await trackingRepository.FindByUserIdAsync(command.UserId)
                        ?? throw new ArgumentException("Tracking not found");
 
@@ -65,21 +74,23 @@ public class TrackingCommandService(
 
     public async Task Handle(RemoveMealPlanEntryFromTrackingCommand command)
     {
-        var tracking = await trackingRepository.FindByIdWithEntriesAsync(command.TrackingId); // ✅ Cambiar aquí
+        var tracking = await trackingRepository.FindByIdWithEntriesAsync(command.TrackingId);
         if (tracking is null)
             throw new ArgumentException("Tracking not found");
+
+        // Validar que el usuario del tracking existe en el contexto IAM
+        await ValidateUserExistsInIam(tracking.UserProfileId);
 
         var entry = tracking.GetMealPlanEntries()
                         .FirstOrDefault(e => e.Id == command.MealPlanEntryId)
                     ?? throw new ArgumentException("Entry not found");
 
         tracking.RemoveMealPlanEntry(entry);
-        mealPlanEntryRepository.Remove(entry); // <- necesario para eliminarlo de la BD
+        mealPlanEntryRepository.Remove(entry);
         trackingRepository.Update(tracking);
 
         await unitOfWork.CompleteAsync();
     }
-
 
     public async Task<Domain.Model.Aggregates.Tracking?> Handle(UpdateMealPlanEntryInTrackingCommand command)
     {
@@ -92,6 +103,9 @@ public class TrackingCommandService(
         var tracking = await trackingRepository.FindByIdWithEntriesAsync(existingEntry.TrackingId);
         if (tracking is null)
             throw new ArgumentException("Tracking not found");
+
+        // Validar que el usuario del tracking existe en el contexto IAM
+        await ValidateUserExistsInIam(tracking.UserProfileId);
 
         // 🔍 Debug
         Console.WriteLine($"MealPlanEntriesInternal count: {tracking.MealPlanEntriesInternal?.Count ?? 0}");
@@ -120,4 +134,17 @@ public class TrackingCommandService(
         return tracking;
     }
 
+    /// <summary>
+    /// Validates that the user exists in the IAM context
+    /// </summary>
+    /// <param name="userId">The user ID to validate</param>
+    /// <exception cref="InvalidOperationException">Thrown when the user does not exist in IAM</exception>
+    private async Task ValidateUserExistsInIam(UserId userId)
+    {
+        var username = await iamContextFacade.FetchUsernameByUserId(userId.Id);
+        if (string.IsNullOrEmpty(username))
+        {
+            throw new InvalidOperationException($"User with ID {userId.Id} does not exist in IAM context");
+        }
+    }
 }
