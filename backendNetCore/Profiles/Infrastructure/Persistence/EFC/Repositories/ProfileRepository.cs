@@ -1,5 +1,4 @@
 using backendNetCore.Profiles.Domain.Model.Aggregates;
-using backendNetCore.Profiles.Domain.Model.ValueObjects;
 using backendNetCore.Profiles.Domain.Repositories;
 using backendNetCore.Shared.Infrastructure.Persistence.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Repositories;

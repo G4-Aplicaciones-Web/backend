@@ -188,6 +188,14 @@ builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
 builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
 
+builder.Services.AddScoped<IObjectiveRepository, ObjectiveRepository>();
+builder.Services.AddScoped<IObjectiveCommandService, ObjectiveCommandService>();
+builder.Services.AddScoped<IObjectiveQueryService, ObjectiveQueryService>();
+
+builder.Services.AddScoped<IActivityLevelRepository, ActivityLevelRepository>();
+builder.Services.AddScoped<IActivityLevelCommandService, ActivityLevelCommandService>();
+builder.Services.AddScoped<IActivityLevelQueryService, ActivityLevelQueryService>();
+
 // IAM Bounded Context Injection Configuration
 
 // TokenSettings Configuration
