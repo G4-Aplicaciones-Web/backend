@@ -1,6 +1,7 @@
 namespace backendNetCore.Profiles.Interfaces.REST.Resources;
 
 public record CreateProfileResource(
+    int UserId,
     string FirstName, 
     string LastName, 
     string Gender, 

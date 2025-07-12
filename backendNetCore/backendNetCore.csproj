@@ -31,7 +31,6 @@
     <ItemGroup>
       <Folder Include="IAM\Infrastructure\" />
       <Folder Include="Profiles\" />
-      <Folder Include="Recommendations\Application\ACL\" />
     </ItemGroup>
 
     <ItemGroup>

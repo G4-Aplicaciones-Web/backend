@@ -30,5 +30,5 @@ public interface IProfileQueryService
     /// /returns>
     Task<Profile?> Handle(GetProfileByIdQuery query);
     
-    
+    Task<Profile?> Handle(GetProfileByUserIdQuery query);
 }

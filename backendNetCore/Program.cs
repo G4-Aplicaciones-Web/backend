@@ -28,7 +28,9 @@ using backendNetCore.Recipes.Domain.Repositories;
 using backendNetCore.Recipes.Domain.Services;
 using backendNetCore.Recipes.Infrastructure.Persistence.EFC.Repositories;
 using backendNetCore.Recommendations.Application.Internal.CommandServices;
-using backendNetCore.Recommendations.Application.Internal.QueryServices;
+using backendNetCore.Recommendations.Application.Internal.OutBoundServices.ACL;
+using backendNetCore.Recommendations.Application.Internal.QueryServices; // Importa el correcto
+using backendNetCore.Tracking.Application.Internal.OutBoundServices.ACL; // Importa el correcto
 using backendNetCore.Recommendations.Domain.Model.Repositories;
 using backendNetCore.Recommendations.Infrastructure.Persistence.EFC.repositories;
 using backendNetCore.Recommendations.Infrastructure.Persistence.EFC.Repositories;
@@ -37,13 +39,13 @@ using backendNetCore.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Configuration;
 using backendNetCore.Shared.Infrastructure.Persistence.Repositories;
 using backendNetCore.Tracking.Application.Internal.CommandServices;
-using backendNetCore.Tracking.Application.Internal.OutBoundServices.ACL;
 using backendNetCore.Tracking.Application.Internal.QueryServices;
 using backendNetCore.Tracking.Domain.Repositories;
 using backendNetCore.Tracking.Domain.Services;
 using backendNetCore.Tracking.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using ExternalProfileService = backendNetCore.Tracking.Application.Internal.OutBoundServices.ACL.ExternalProfileService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -156,7 +158,11 @@ builder.Services.AddScoped<IIngredientQueryService, IngredientQueryService>();
 builder.Services.AddScoped<IRecommendationCommandService, RecommendationCommandService>();
 builder.Services.AddScoped<IRecommendationQueryService, RecommendationQueryService>();
 builder.Services.AddScoped<IRecommendationRepository, RecommendationRepository>();
-builder.Services.AddScoped<RecommendationTemplateRepository>(); // No tiene interfaz todavía
+builder.Services.AddScoped<RecommendationTemplateRepository>();
+
+// ACL Services para Recommendations
+builder.Services.AddScoped<backendNetCore.Recommendations.Application.Internal.OutBoundServices.ACL.ExternalProfileService>();
+builder.Services.AddScoped<ExternalIamService>();
 
 // Meal Plans Bounded Context Injection Configuration
 builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();

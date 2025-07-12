@@ -1,5 +1,6 @@
 using backendNetCore.Profiles.Domain.Model.Aggregates;
 using backendNetCore.Profiles.Domain.Model.Entities;
+using backendNetCore.Profiles.Domain.Model.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace backendNetCore.Profiles.Infrastructure.Persistence.EFC.Configuration.Extensions;
@@ -11,6 +12,14 @@ public static class ModelBuilderExtensions
         // Profile entity
         builder.Entity<Profile>().HasKey(p => p.Id);
         builder.Entity<Profile>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+        
+        builder.Entity<Profile>()
+            .Property(p => p.UserId)
+            .HasConversion(
+                userId => userId.Value, // al guardar
+                value => new UserId(value)) // al leer
+            .HasColumnName("UserId")
+            .IsRequired();
 
         builder.Entity<Profile>().OwnsOne(p => p.Name, n =>
         {

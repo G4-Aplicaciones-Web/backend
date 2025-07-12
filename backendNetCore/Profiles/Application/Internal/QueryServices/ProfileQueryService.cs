@@ -1,5 +1,6 @@
 using backendNetCore.Profiles.Domain.Model.Aggregates;
 using backendNetCore.Profiles.Domain.Model.Queries;
+using backendNetCore.Profiles.Domain.Model.ValueObjects;
 using backendNetCore.Profiles.Domain.Repositories;
 using backendNetCore.Profiles.Domain.Services;
 
@@ -23,5 +24,11 @@ public class ProfileQueryService(IProfileRepository profileRepository) : IProfil
     public async Task<Profile?> Handle(GetProfileByIdQuery query)
     {
         return await profileRepository.FindByIdAsync(query.ProfileId);
+    }
+
+    public async Task<Profile?> Handle(GetProfileByUserIdQuery query)
+    {
+        var userId = new UserId(query.UserId);
+        return await profileRepository.FindByUserIdAsync(userId);   
     }
 }

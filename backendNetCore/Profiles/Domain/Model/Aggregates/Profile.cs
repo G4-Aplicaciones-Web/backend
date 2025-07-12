@@ -16,6 +16,8 @@ public partial class Profile
     public int Id { get; }
 
     public PersonName Name { get; private set; }
+    
+    public UserId UserId { get; private set; }
 
     public string FullName => Name.FullName;
 
@@ -57,6 +59,7 @@ public partial class Profile
     public Profile(CreateProfileCommand command)
         : this(command.FirstName, command.LastName, command.Gender, command.Height, command.Weight, command.Score, command.ActivityLevelId, command.ObjectiveId)
     {
+        UserId = new UserId(command.UserId);
     }
 
     public void AddAllergy(string name)

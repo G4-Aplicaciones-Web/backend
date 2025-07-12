@@ -1,5 +1,6 @@
 using backendNetCore.Profiles.Domain.Model.Aggregates;
 using backendNetCore.Profiles.Interfaces.REST.Resources;
+using backendNetCore.Recipes.Domain.Model.ValueObjects;
 
 namespace backendNetCore.Profiles.Interfaces.REST.Transform;
 
@@ -12,6 +13,7 @@ public static class ProfileResourceFromEntityAssembler
     {
         return new ProfileResource(
             entity.Id, 
+            entity.UserId.Value,
             entity.FullName, 
             entity.Gender,
             entity.Height,
