@@ -1,3 +1,4 @@
+using backendNetCore.IAM.Interfaces.ACL;
 using backendNetCore.Profiles.Interfaces.ACL;
 using backendNetCore.Tracking.Domain.Model.Commands;
 using backendNetCore.Tracking.Domain.Model.Entities;
@@ -10,16 +11,23 @@ namespace backendNetCore.Tracking.Application.Internal.OutBoundServices.ACL;
 /// External service to interact with Profiles bounded context
 /// Acts as an Anti-Corruption Layer (ACL) between Tracking and Profiles contexts
 /// </summary>
+/// <summary>
+/// External service to interact with Profiles and IAM bounded contexts
+/// Acts as an Anti-Corruption Layer (ACL) between Tracking, Profiles, and IAM contexts
+/// </summary>
 public class ExternalProfileService : IExternalProfileService
 {
     private readonly IProfilesContextFacade _profilesContextFacade;
+    private readonly IIamContextFacade _iamContextFacade;
     private readonly ITrackingGoalCommandService _trackingGoalCommandService;
 
     public ExternalProfileService(
         IProfilesContextFacade profilesContextFacade,
+        IIamContextFacade iamContextFacade,
         ITrackingGoalCommandService trackingGoalCommandService)
     {
         _profilesContextFacade = profilesContextFacade;
+        _iamContextFacade = iamContextFacade;
         _trackingGoalCommandService = trackingGoalCommandService;
     }
 
@@ -33,29 +41,43 @@ public class ExternalProfileService : IExternalProfileService
         return await _profilesContextFacade.FetchObjectiveNameByProfileId(profileId);
     }
 
-    public async Task<TrackingGoal?> CreateTrackingGoalBasedOnProfile(int profileId)
+    public async Task<bool> ExistsUserById(int userId)
     {
-        // Verificar que el perfil existe
+        // Validar que el userId existe en el contexto IAM
+        var username = await _iamContextFacade.FetchUsernameByUserId(userId);
+        return !string.IsNullOrEmpty(username);
+    }
+
+    public async Task<TrackingGoal?> CreateTrackingGoalBasedOnProfile(int profileId, int userId)
+    {
+        // 1. Verificar que el usuario existe en el contexto IAM
+        var userExists = await ExistsUserById(userId);
+        if (!userExists)
+        {
+            throw new InvalidOperationException($"User with ID {userId} does not exist in IAM context");
+        }
+
+        // 2. Verificar que el perfil existe
         var profileExists = await _profilesContextFacade.ExistsProfileById(profileId);
         if (!profileExists)
         {
             throw new InvalidOperationException($"Profile with ID {profileId} does not exist");
         }
 
-        // Obtener el objetivo del perfil
+        // 3. Obtener el objetivo del perfil
         var objectiveName = await _profilesContextFacade.FetchObjectiveNameByProfileId(profileId);
         if (string.IsNullOrEmpty(objectiveName))
         {
             throw new InvalidOperationException($"No objective found for profile {profileId}");
         }
 
-        // Mapear el objetivo del perfil a GoalType DisplayName
+        // 4. Mapear el objetivo del perfil a GoalType DisplayName
         var goalTypeDisplayName = MapObjectiveToGoalTypeDisplayName(objectiveName);
         
-        // Crear el comando con el GoalType DisplayName mapeado
-        var command = new CreateTrackingGoalByObjectiveCommand(new UserId(profileId), goalTypeDisplayName);
+        // 5. Crear el comando con el userId validado y el GoalType del perfil
+        var command = new CreateTrackingGoalByObjectiveCommand(new UserId(userId), goalTypeDisplayName);
         
-        // Ejecutar el comando a través del servicio
+        // 6. Ejecutar el comando a través del servicio
         return await _trackingGoalCommandService.Handle(command);
     }
 

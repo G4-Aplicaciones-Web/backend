@@ -12,7 +12,7 @@ namespace backendNetCore.Tracking.Domain.Model.Aggregates;
 /// This class represents the Tracking aggregate root for meal planning.
 /// It manages the tracking of consumed meals and nutritional information.
 /// </remarks>
-public class Tracking
+public partial class Tracking
 {
     private List<MealPlanEntry> _mealPlanEntries = new List<MealPlanEntry>();
 
