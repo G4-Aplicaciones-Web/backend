@@ -17,17 +17,25 @@ namespace backendNetCore.Profiles.Application.Internal.CommandServices;
 /// </param>
 public class ProfileCommandService(
     IProfileRepository profileRepository, 
+    IObjectiveRepository objectiveRepository,
+    IActivityLevelRepository activityLevelRepository,
     IUnitOfWork unitOfWork) 
     : IProfileCommandService
 {
     /// <inheritdoc />
     public async Task<Profile?> Handle(CreateProfileCommand command)
     {
+        var objective = await objectiveRepository.FindByIdAsync(command.ObjectiveId);
+        if (objective is null) throw new Exception("Objective not found");
+        var activityLevel = await activityLevelRepository.FindByIdAsync(command.ActivityLevelId);
+        if (activityLevel is null) throw new Exception("Activity level not found");
         var profile = new Profile(command);
         try
         {
             await profileRepository.AddAsync(profile);
             await unitOfWork.CompleteAsync();
+            profile.ActivityLevel = activityLevel;
+            profile.Objective = objective;
             return profile;
         } catch (Exception e)
         {
@@ -41,12 +49,23 @@ public class ProfileCommandService(
         var profile = await profileRepository.FindByIdAsync(command.ProfileId);
         if (profile is null) return null;
 
+        var objective = await objectiveRepository.FindByIdAsync(command.ObjectiveId);
+        if (objective is null) throw new Exception("Objective not found");
+
+        var activityLevel = await activityLevelRepository.FindByIdAsync(command.ActivityLevelId);
+        if (activityLevel is null) throw new Exception("Activity level not found");
+
         profile.UpdateProfile(command.Height, command.Weight, command.ActivityLevelId, command.ObjectiveId);
 
         try
         {
             profileRepository.Update(profile);
             await unitOfWork.CompleteAsync();
+
+            // Asignación manual para evitar nulls en el assembler
+            profile.ActivityLevel = activityLevel;
+            profile.Objective = objective;
+
             return profile;
         }
         catch (Exception)
@@ -55,6 +74,7 @@ public class ProfileCommandService(
             return null;
         }
     }
+
 
 
     public async Task<Profile?> Handle(AddAllergyToProfileCommand command)

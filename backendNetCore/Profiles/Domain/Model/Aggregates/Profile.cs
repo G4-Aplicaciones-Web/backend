@@ -33,7 +33,7 @@ public partial class Profile
 
     public Objective Objective { get; internal set; }
 
-    public int ObjectivelId { get; private set; }
+    public int ObjectiveId { get; private set; }
 
     private readonly List<Allergy> _allergies = new();
     public IReadOnlyCollection<Allergy> Allergies => _allergies.AsReadOnly();
@@ -51,7 +51,7 @@ public partial class Profile
         Weight = weight;
         Score = score;
         ActivityLevelId = activityLevelId;
-        ObjectivelId = objectiveId;
+        ObjectiveId = objectiveId;
     }
 
     public Profile(CreateProfileCommand command)
@@ -84,7 +84,7 @@ public partial class Profile
         Height = height;
         Weight = weight;
         ActivityLevelId = activityLevelId;
-        ObjectivelId = objectiveId;
+        ObjectiveId = objectiveId;
     }
 
 }
