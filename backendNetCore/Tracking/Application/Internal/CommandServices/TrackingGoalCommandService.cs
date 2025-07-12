@@ -1,9 +1,10 @@
-﻿using backendNetCore.Shared.Domain.Repositories;
+﻿using backendNetCore.IAM.Interfaces.ACL;
+using backendNetCore.Shared.Domain.Repositories;
 using backendNetCore.Tracking.Domain.Model.Commands;
 using backendNetCore.Tracking.Domain.Model.Entities;
+using backendNetCore.Tracking.Domain.Model.ValueObjects;
 using backendNetCore.Tracking.Domain.Repositories;
 using backendNetCore.Tracking.Domain.Services;
-using backendNetCore.Shared.Domain.Repositories;
 
 namespace backendNetCore.Tracking.Application.Internal.CommandServices;
 
@@ -11,17 +12,23 @@ public class TrackingGoalCommandService : ITrackingGoalCommandService
 {
     private readonly ITrackingGoalRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IIamContextFacade _iamContextFacade;
 
     public TrackingGoalCommandService(
         ITrackingGoalRepository repository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IIamContextFacade iamContextFacade)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
+        _iamContextFacade = iamContextFacade;
     }
 
     public async Task<TrackingGoal> Handle(CreateTrackingGoalCommand command)
     {
+        // Validar que el usuario existe en el contexto IAM
+        await ValidateUserExistsInIam(command.UserId);
+
         var goal = new TrackingGoal(command.UserId, command.Macronutrient);
         await _repository.AddAsync(goal);
         await _unitOfWork.CompleteAsync();
@@ -30,6 +37,9 @@ public class TrackingGoalCommandService : ITrackingGoalCommandService
 
     public async Task<TrackingGoal> Handle(CreateTrackingGoalByObjectiveCommand command)
     {
+        // Validar que el usuario existe en el contexto IAM
+        await ValidateUserExistsInIam(command.UserId);
+
         // Verificar si ya existe un goal para este usuario
         var existingGoal = await _repository.FindByUserIdAsync(command.UserId);
         if (existingGoal != null)
@@ -54,6 +64,9 @@ public class TrackingGoalCommandService : ITrackingGoalCommandService
 
     public async Task<TrackingGoal> Handle(UpdateTrackingGoalCommand command)
     {
+        // Validar que el usuario existe en el contexto IAM
+        await ValidateUserExistsInIam(command.UserId);
+
         var trackingGoal = await _repository.FindByUserIdAsync(command.UserId);
         if (trackingGoal == null)
             throw new InvalidOperationException($"No se encontró una meta de seguimiento para el usuario {command.UserId}");
@@ -62,5 +75,19 @@ public class TrackingGoalCommandService : ITrackingGoalCommandService
         await _unitOfWork.CompleteAsync();
         
         return trackingGoal;
+    }
+
+    /// <summary>
+    /// Validates that the user exists in the IAM context
+    /// </summary>
+    /// <param name="userId">The user ID to validate</param>
+    /// <exception cref="InvalidOperationException">Thrown when the user does not exist in IAM</exception>
+    private async Task ValidateUserExistsInIam(UserId userId)
+    {
+        var username = await _iamContextFacade.FetchUsernameByUserId(userId.Id);
+        if (string.IsNullOrEmpty(username))
+        {
+            throw new InvalidOperationException($"User with ID {userId.Id} does not exist in IAM context");
+        }
     }
 }
