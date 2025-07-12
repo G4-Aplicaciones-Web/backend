@@ -11,6 +11,7 @@ public static class CreateProfileCommandFromResourceAssembler
     public static CreateProfileCommand ToCommandFromResource(CreateProfileResource resource)
     {
         return new CreateProfileCommand(
+            resource.UserId,
             resource.FirstName,
             resource.LastName,
             resource.Gender,

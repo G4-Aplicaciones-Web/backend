@@ -10,6 +10,7 @@ namespace backendNetCore.Profiles.Interfaces.ACL;
 public interface IProfilesContextFacade
 {
     Task<int> CreateProfile(
+        int userId,
         string firstName,
         string lastName,
         string gender,
@@ -24,7 +25,6 @@ public interface IProfilesContextFacade
     Task<bool> ExistsProfileById(int profileId);
     Task<Objective?> FetchObjectiveByProfileId(int profileId);
     Task<string?> FetchObjectiveNameByProfileId(int profileId);
-
     Task<Profile?> AddAllergy(int profileId, string ingredientName);
     Task<Profile?> RemoveAllergy(int profileId, string ingredientName);
 }

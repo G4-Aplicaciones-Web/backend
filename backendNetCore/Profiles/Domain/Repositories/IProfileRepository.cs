@@ -1,4 +1,5 @@
 using backendNetCore.Profiles.Domain.Model.Aggregates;
+using backendNetCore.Profiles.Domain.Model.Queries;
 using backendNetCore.Profiles.Domain.Model.ValueObjects;
 using backendNetCore.Shared.Domain.Repositories;
 
@@ -9,5 +10,5 @@ namespace backendNetCore.Profiles.Domain.Repositories;
 /// </summary>
 public interface IProfileRepository : IBaseRepository<Profile>
 {
-    
+    Task<Profile?> FindByUserIdAsync(UserId userId);
 }

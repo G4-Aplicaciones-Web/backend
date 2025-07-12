@@ -17,10 +17,10 @@ public class ProfilesContextFacade(
     IProfileQueryService profileQueryService
     ) : IProfilesContextFacade
 {
-    public async Task<int> CreateProfile(string firstName, string lastName, string gender, double height, double weight, double score,
+    public async Task<int> CreateProfile(int userId, string firstName, string lastName, string gender, double height, double weight, double score,
         int activityLevelId, int objectiveId)
     {
-        var command = new CreateProfileCommand(firstName, lastName, gender, height, weight, score, activityLevelId, objectiveId);
+        var command = new CreateProfileCommand(userId, firstName, lastName, gender, height, weight, score, activityLevelId, objectiveId);
         var profile = await profileCommandService.Handle(command);
         return profile?.Id ?? 0;
     }
